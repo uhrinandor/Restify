@@ -1,0 +1,7 @@
+﻿services:
+  restifyserver:
+    image: restifyserver
+    build:
+      context: .
+      dockerfile: RestifyServer/Dockerfile
+
