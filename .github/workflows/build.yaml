@@ -45,3 +45,25 @@ jobs:
 
       - name: Docker build (server)
         run: docker build -t restify-server:latest -f ./RestifyServer/Dockerfile .
+        
+      - name: Tag
+        if: github.event_name == 'push'
+        run: |
+            # Extract AssemblyVersion from csproj
+            VERSION=$(dotnet msbuild RestifyServer/RestifyServer.csproj -nologo -t:GetAssemblyVersion -property:GenerateFullPaths=true | tail -n 1)
+            
+            # Fallback if AssemblyVersion is not found
+            if [ -z "$VERSION" ]; then
+              VERSION=$(grep -oPm1 "(?<=<AssemblyVersion>)[^<]+" RestifyServer/RestifyServer.csproj)
+            fi
+            
+            TIMESTAMP=$(date -u +"%Y%m%d.%H%M%S")
+            TAG="v$VERSION-$TIMESTAMP"
+            
+            echo "Tagging commit with: $TAG"
+            
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            git tag "$TAG"
+            git push origin "$TAG"
