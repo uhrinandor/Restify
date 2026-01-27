@@ -21,7 +21,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey("ProductId")
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         b.HasOne(x => x.Invoice)
             .WithMany(i => i.Orders)
             .HasForeignKey("InvoiceId")

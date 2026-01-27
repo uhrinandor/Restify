@@ -31,7 +31,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .HasForeignKey("WaiterId")
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         b.HasMany(x => x.Orders)
             .WithOne(o => o.Invoice)
             .HasForeignKey("InvoiceId")

@@ -6,7 +6,7 @@ namespace RestifyServer.Repository;
 public class RestifyContext : DbContext
 {
     public RestifyContext(DbContextOptions<RestifyContext> options) : base(options) { }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(RestifyContext).Assembly);

@@ -23,13 +23,13 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         b.Property(x => x.Price)
             .HasPrecision(12, 2)
             .IsRequired();
-        
+
         b.HasOne(x => x.Category)
             .WithMany(c => c.Products)
             .HasForeignKey("CategoryId")
             .OnDelete(DeleteBehavior.SetNull);
-        
+
         b.HasIndex("CategoryId");
-        
+
     }
 }
