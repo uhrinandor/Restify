@@ -18,4 +18,10 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        
+        return services;
+    }
 }
