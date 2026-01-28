@@ -61,7 +61,7 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
             push: true
-            tags: ghcr.io/${{ github.repository }}:latest
+            tags: ghcr.io/restify-server:latest
         
       - name: Tag
         if: github.event_name == 'push'
