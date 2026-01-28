@@ -8,6 +8,7 @@ on:
 
 permissions:
     contents: write
+    packages: write
 
 jobs:
   build-server:
@@ -45,12 +46,6 @@ jobs:
         with:
           name: restify-server
           path: ./out
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Docker build (server)
-        run: docker build -t restify-server:latest -f ./RestifyServer/Dockerfile .
 
       - uses: docker/login-action@v3
         with:
@@ -62,7 +57,7 @@ jobs:
         with:
             push: true
             file: ./RestifyServer/Dockerfile
-            tags: ghcr.io/restify-server:latest
+            tags: ghcr.io/${{ github.repository_owner }}/restify-server:latest
         
       - name: Tag
         if: github.event_name == 'push'
