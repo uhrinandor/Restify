@@ -7,7 +7,7 @@ namespace RestifyServer.Repositories;
 
 public class Repository<T> : IRepository<T> where T : Entity, new()
 {
-    private  readonly RestifyContext _db;
+    private readonly RestifyContext _db;
     private readonly DbSet<T> _set;
 
     public Repository(RestifyContext db)
@@ -15,13 +15,13 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
         _db = db;
         _set = db.Set<T>();
     }
-    
+
     public IQueryable<T> Query(bool asNoTracking = true) => asNoTracking ? _set.AsNoTracking() : _set;
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, bool asNoTracking = true)
     {
         if (!asNoTracking) return await _set.FindAsync(new object[] { id }, ct);
-        
+
         return await _set.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 

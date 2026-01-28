@@ -6,5 +6,5 @@ namespace RestifyServer.Repositories;
 
 public class AdminRepository : Repository<Admin>
 {
-    public AdminRepository(RestifyContext db): base(db) {}
+    public AdminRepository(RestifyContext db) : base(db) { }
 }

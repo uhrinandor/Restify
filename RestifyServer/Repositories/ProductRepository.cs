@@ -5,5 +5,5 @@ namespace RestifyServer.Repositories;
 
 public class ProductRepository : Repository<Product>
 {
-    public ProductRepository(RestifyContext db): base(db) {}
+    public ProductRepository(RestifyContext db) : base(db) { }
 }

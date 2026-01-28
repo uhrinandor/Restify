@@ -5,5 +5,5 @@ namespace RestifyServer.Repositories;
 
 public class OrderRepository : Repository<Order>
 {
-    public OrderRepository(RestifyContext db): base(db) {}
+    public OrderRepository(RestifyContext db) : base(db) { }
 }

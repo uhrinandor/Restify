@@ -5,5 +5,5 @@ namespace RestifyServer.Repositories;
 
 public class InvoiceRepository : Repository<Invoice>
 {
-    public InvoiceRepository(RestifyContext db): base(db) {}
+    public InvoiceRepository(RestifyContext db) : base(db) { }
 }
