@@ -61,6 +61,7 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
             push: true
+            file: ./RestifyServer/Dockerfile
             tags: ghcr.io/restify-server:latest
         
       - name: Tag
