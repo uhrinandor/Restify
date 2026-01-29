@@ -3,7 +3,8 @@
 // </copyright>
 
 using Microsoft.EntityFrameworkCore;
-using RestifyServer;
+using RestifyServer.Configuration;
+using RestifyServer.ExceptionFilters;
 using RestifyServer.Repository;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -12,11 +13,11 @@ builder.Services.AddDbContext<RestifyContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddRepositories();
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen();
+builder.Services.AddMapper();
+builder.Services.AddUtils();
+builder.Services.AddServices();
+builder.Services.AddControllers(options => ControllerConfigFactory.ConfigureControllers(options));
+builder.Services.AddSwagger();
 
 WebApplication app = builder.Build();
 

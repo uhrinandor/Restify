@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using RestifyServer.Interfaces;
+using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Models;
 using RestifyServer.Repository;
 
@@ -16,8 +18,6 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
         _set = db.Set<T>();
     }
 
-    public IQueryable<T> Query(bool asNoTracking = true) => asNoTracking ? _set.AsNoTracking() : _set;
-
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, bool asNoTracking = true)
     {
         if (!asNoTracking) return await _set.FindAsync(new object[] { id }, ct);
@@ -27,20 +27,34 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
 
     public Task<bool> ExistsAsync(Guid id, CancellationToken ct = default) => _set.AsNoTracking().AnyAsync(x => x.Id == id, ct);
 
+    public Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
+        bool asNoTracking = true)
+    {
+        var q = asNoTracking ? _set.AsNoTracking() : _set;
+
+        return q.FirstOrDefaultAsync(predicate, ct);
+    }
+
+    public Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
+        bool asNoTracking = true)
+    {
+        var q = asNoTracking ? _set.AsNoTracking() : _set;
+
+        return q.Where(predicate).ToListAsync(ct);
+    }
+
+    public Task<List<T>> ListAsync(CancellationToken ct = default,
+        bool asNoTracking = true)
+    {
+        var q = asNoTracking ? _set.AsNoTracking() : _set;
+
+        return q.ToListAsync(ct);
+    }
+
     public void Add(T entity) => _set.Add(entity);
     public void AddRange(IEnumerable<T> entities) => _set.AddRange(entities);
 
-    public void Update(T entity) => _set.Update(entity);
-
     public void Remove(T entity) => _set.Remove(entity);
 
-    public void RemoveById(Guid id)
-    {
-        var strub = new T { Id = id };
-        _db.Entry(strub).State = EntityState.Deleted;
-    }
-
     public void RemoveRange(IEnumerable<T> entities) => _set.RemoveRange(entities);
-
-    public Task<int> SaveChangesAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 }
