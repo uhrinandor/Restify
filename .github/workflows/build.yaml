@@ -35,8 +35,8 @@ jobs:
       - name: Build
         run: dotnet build --no-restore -c Release
 
-      - name: Test
-        run: dotnet test --no-build -c Release --verbosity normal
+      - name: Test (RestifyServer.Tests)
+        run: dotnet run --project RestifyServer.Tests/RestifyServer.Tests.csproj
 
       - name: Publish
         run: dotnet publish ./RestifyServer/RestifyServer.csproj -c Release -o ./out

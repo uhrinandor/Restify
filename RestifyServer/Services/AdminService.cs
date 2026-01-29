@@ -11,7 +11,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitOfWork, PasswordHasher<Models.Admin> passwordHasher, IMapper mapper) : IAdminService
+public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitOfWork, IPasswordHasher<Models.Admin> passwordHasher, IMapper mapper) : IAdminService
 {
     public async Task<List<Admin>> List(FindAdmin query, CancellationToken ct = default)
     {
@@ -40,13 +40,13 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
 
     public async Task<Admin?> FindById(Guid id, CancellationToken ct = default)
     {
-        var dbAdmin = await LoadAdmin(id, ct);
+        var dbAdmin = await LoadAdminAsync(id, ct);
         return mapper.Map<Admin>(dbAdmin);
     }
 
     public async Task<Admin?> Update(Guid id, UpdateAdmin admin, CancellationToken ct = default)
     {
-        var dbAdmin = await LoadAdmin(id, ct); ;
+        var dbAdmin = await LoadAdminAsync(id, ct);
 
         if (admin.Username != null) dbAdmin.Username = admin.Username;
         if (admin.WriteMode is bool writeMode) dbAdmin.AccessLevel = writeMode ? Permission.Write : Permission.Read;
@@ -56,7 +56,7 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
 
     public async Task<bool> Delete(Guid id, CancellationToken ct = default)
     {
-        var dbAdmin = await LoadAdmin(id, ct); ;
+        var dbAdmin = await LoadAdminAsync(id, ct);
         adminRepo.Remove(dbAdmin);
         await unitOfWork.SaveChangesAsync(ct);
 
@@ -65,7 +65,7 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
 
     public async Task<bool> UpdatePassword(Guid id, UpdateAdminPassword credentials, CancellationToken ct = default)
     {
-        var dbAdmin = await LoadAdmin(id, ct);
+        var dbAdmin = await LoadAdminAsync(id, ct);
 
         if (passwordHasher.VerifyHashedPassword(dbAdmin, dbAdmin.Password, credentials.OldPassword) == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException();
@@ -74,7 +74,7 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
         return true;
     }
 
-    private async Task<Models.Admin> LoadAdmin(Guid id, CancellationToken ct = default)
+    private async Task<Models.Admin> LoadAdminAsync(Guid id, CancellationToken ct = default)
     {
         var dbAdmin = await adminRepo.FirstOrDefaultAsync(a => a.Id == id, ct, false) ?? throw new NotFoundException(id, typeof(Admin));
         return dbAdmin;
