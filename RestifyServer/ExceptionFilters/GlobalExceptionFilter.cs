@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using RestifyServer.Exceptions;
+using Serilog;
 
 namespace RestifyServer.ExceptionFilters;
 
@@ -26,7 +27,7 @@ public class GlobalExceptionFilter : IExceptionFilter
         };
 
         problem.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
-
+        Log.Error(context.HttpContext.TraceIdentifier, ex, problem);
         context.Result = new ObjectResult(problem)
         {
             StatusCode = statusCode,

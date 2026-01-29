@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Serilog;
 
 namespace RestifyServer.ExceptionFilters;
 
@@ -11,6 +12,7 @@ public sealed class DbExceptionFilter : IExceptionFilter
     {
         if (context.Exception is not DbUpdateException dbEx) return;
         var problem = CreateProblemDetails(dbEx, out var statusCode);
+        Log.Error($"{problem.Title}: {problem.Detail}", dbEx, context.HttpContext.TraceIdentifier);
         context.Result = new ObjectResult(problem)
         {
             StatusCode = statusCode

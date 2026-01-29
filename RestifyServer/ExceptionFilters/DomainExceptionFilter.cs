@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using RestifyServer.Exceptions;
+using Serilog;
 
 namespace RestifyServer.ExceptionFilters;
 
@@ -12,21 +13,25 @@ public class DomainExceptionFilter : IExceptionFilter
         {
             if (context.Exception is NotFoundException nf)
             {
-                context.Result = new NotFoundObjectResult(new ProblemDetails
+                ProblemDetails problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status404NotFound,
                     Title = nf.Message
-                });
+                };
+                context.Result = new NotFoundObjectResult(problemDetails);
+                Log.Error(context.HttpContext.TraceIdentifier, domainException, problemDetails);
             }
             else
             {
-                context.Result = new ObjectResult(new ProblemDetails
+                var problemDetails = new ProblemDetails
                 {
                     Status = StatusCodes.Status500InternalServerError,
                     Title = domainException.Message
-                }
-                );
+                };
+                context.Result = new ObjectResult(problemDetails);
+                Log.Error(context.HttpContext.TraceIdentifier, domainException, problemDetails);
             }
+
             context.ExceptionHandled = true;
         }
     }
