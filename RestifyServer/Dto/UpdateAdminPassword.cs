@@ -1,8 +1,0 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace RestifyServer.Dto;
-
-public record UpdateAdminPassword(
-    [param: Required, MinLength(6)] string OldPassword,
-    [param: Required, MinLength(6)] string NewPassword
-);
