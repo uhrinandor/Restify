@@ -90,7 +90,7 @@ jobs:
               with:
                   push: true
                   context: ./RestifyClient
-                  file: ./Dockerfile
+                  file: ./RestifyClient/Dockerfile
                   tags: ghcr.io/${{ github.repository_owner }}/restify-client:latest
 
     tag-build:
