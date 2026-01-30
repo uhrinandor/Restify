@@ -89,7 +89,8 @@ jobs:
             - uses: docker/build-push-action@v5
               with:
                   push: true
-                  file: ./RestifyClient/Dockerfile
+                  context: ./RestifyClient
+                  file: ./Dockerfile
                   tags: ghcr.io/${{ github.repository_owner }}/restify-client:latest
 
     tag-build:
