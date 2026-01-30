@@ -58,7 +58,7 @@
 
     <PropertyGroup>
         <OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
-        <OpenApiDocumentsDirectory>./openapi</OpenApiDocumentsDirectory>
+        <OpenApiDocumentsDirectory>../RestifyClient/openapi</OpenApiDocumentsDirectory>
     </PropertyGroup>
 
 </Project>
