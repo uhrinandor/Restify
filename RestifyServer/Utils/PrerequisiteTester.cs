@@ -2,18 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using RestifyServer.Repository;
 using Serilog;
 
-namespace RestifyServer.Configuration;
+namespace RestifyServer.Utils;
 
-public static class AppConfiguration
+public static class PrerequisiteTester
 {
-    public static string GetSeqUrl(ConfigurationManager Config)
+    public static void TestDbConnection(this WebApplication application)
     {
-        return Config.GetValue<string>("Serilog:WriteTo:1:Args:serverUrl") ?? throw new Exception("Seq log url was not found...");
-    }
-
-    public static void TestDbConnection(IServiceProvider Services)
-    {
-        using (var scope = Services.CreateScope())
+        using (var scope = application.Services.CreateScope())
         {
             var context = scope.ServiceProvider.GetRequiredService<RestifyContext>();
             try

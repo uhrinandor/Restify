@@ -5,19 +5,27 @@
 using Microsoft.EntityFrameworkCore;
 using RestifyServer.Configuration;
 using RestifyServer.Repository;
+using RestifyServer.Utils;
 using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration().WriteTo.Console().WriteTo.Seq(AppConfiguration.GetSeqUrl(builder.Configuration)).CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .Enrich.WithProperty("Enviroment", builder.Environment.EnvironmentName)
+    .Enrich.WithProperty("ApplicationName", builder.Environment.ApplicationName)
+    .WriteTo.Seq(AppConfiguration.GetSeqUrl(builder.Configuration))
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddDbContext<RestifyContext>((sp, options) =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
-    options.LogTo(Log.Information, LogLevel.Information);
-    options.LogTo(Log.Error, LogLevel.Error);
-    options.LogTo(Log.Warning, LogLevel.Warning);
-    options.LogTo(Log.Fatal, LogLevel.Error);
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(2);
+    });
+
+    options.UseLoggerFactory(new LoggerFactory());
 });
 
 builder.Services.AddRepositories();
@@ -28,6 +36,7 @@ builder.Services.AddControllers(options => ControllerConfigFactory.ConfigureCont
 builder.Services.AddSwagger();
 
 WebApplication app = builder.Build();
+app.TestDbConnection();
 
 if (app.Environment.IsDevelopment())
 {

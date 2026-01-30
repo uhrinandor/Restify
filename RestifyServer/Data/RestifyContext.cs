@@ -13,10 +13,6 @@ public class RestifyContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    // Design only
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=restify;Username=restify;Password=restify");
-
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var now = DateTime.UtcNow;

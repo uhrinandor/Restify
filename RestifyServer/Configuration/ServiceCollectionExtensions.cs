@@ -51,8 +51,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddUtils(this IServiceCollection services)
     {
-        services.AddSingleton<PasswordHasher<Models.Admin>>();
-        services.AddSingleton<PasswordHasher<Models.Waiter>>();
+        services.AddScoped<IPasswordHasher<Models.Admin>, PasswordHasher<Models.Admin>>();
+        services.AddScoped<IPasswordHasher<Models.Waiter>, PasswordHasher<Models.Waiter>>();
 
         return services;
     }

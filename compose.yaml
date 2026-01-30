@@ -1,17 +1,25 @@
 ﻿services:
-  restifyserver:
-    image: restifyserver
+  server:
+    image: restify-server
     depends_on:
       - postgres
+      - seq
+    networks:
+      - restify-net
     build:
       context: .
       dockerfile: RestifyServer/Dockerfile
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Production
+        - ConnectionStrings__Default=Host=restify-db;Port=5432;Database=${DB_SOURCE};Username=${DB_USER};Password=${DB_PASSWORD}
     ports:
       - "8080:8080"
   postgres:
     image: postgres:16
-    container_name: restifydb
+    container_name: restify-db
     restart: unless-stopped
+    networks:
+        - restify-net
     environment:
       POSTGRES_USER: $DB_USER
       POSTGRES_PASSWORD: $DB_PASSWORD
@@ -20,6 +28,22 @@
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+  seq:
+      image: datalust/seq:latest
+      container_name: seq
+      restart: unless-stopped
+      networks:
+          - restify-net
+      environment:
+          ACCEPT_EULA: "Y"
+          SEQ_FIRSTRUN_ADMINPASSWORD: "admin"
+      volumes:
+          - seqdata:/data
+      ports:
+          - "5341:80"
 
 volumes:
   pgdata:
+  seqdata:
+networks:
+  restify-net:
