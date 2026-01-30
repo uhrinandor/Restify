@@ -34,9 +34,11 @@ builder.Services.AddUtils();
 builder.Services.AddServices();
 builder.Services.AddControllers(options => ControllerConfigFactory.ConfigureControllers(options));
 builder.Services.AddSwagger();
+builder.Services.AddOpenApi();
 
 WebApplication app = builder.Build();
 app.TestDbConnection();
+app.MapOpenApi();
 
 if (app.Environment.IsDevelopment())
 {
