@@ -50,7 +50,7 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - uses: docker/build-push-action@v5
+            - uses: docker/build-push-action@v6
               if: github.event_name == 'push'
               with:
                   push: true
@@ -99,7 +99,7 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - uses: docker/build-push-action@v5
+            - uses: docker/build-push-action@v6
               if: github.event_name == 'push'
               with:
                   push: true
