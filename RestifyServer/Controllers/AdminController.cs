@@ -17,7 +17,7 @@ public class AdminController(IAdminService adminService) : ControllerBase
         var created = await adminService.Create(data, ct);
         return CreatedAtAction(nameof(Create), new { id = created.Id }, created);
     }
-    [HttpGet("ListAdmins")]
+    [HttpGet(Name="ListAdmins")]
     [ProducesResponseType(typeof(List<Admin>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<Admin>>> List([FromQuery] FindAdmin query, CancellationToken ct)
     {
