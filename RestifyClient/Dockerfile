@@ -6,6 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . ./
+RUN npm run prebuild
 RUN ng build --configuration=production
 
 FROM nginx:stable AS final
