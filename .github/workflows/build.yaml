@@ -38,7 +38,7 @@ jobs:
               run: dotnet run --project RestifyServer.Tests/RestifyServer.Tests.csproj
 
             - name: Upload OpenAPI spec
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v6
               with:
                   name: openapi-spec
                   path: ./RestifyClient/openapi/RestifyServer.json
