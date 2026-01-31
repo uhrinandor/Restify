@@ -1,0 +1,25 @@
+version: 2
+updates:
+    - package-ecosystem: "nuget"
+      directory: "/RestifyServer"
+      schedule:
+          interval: "weekly"
+
+    - package-ecosystem: "nuget"
+      directory: "/RestifyServer.Tests"
+      schedule:
+          interval: "weekly"
+
+    - package-ecosystem: "npm"
+      directory: "/RestifyClient"
+      schedule:
+          interval: "weekly"
+      open-pull-requests-limit: 5
+      patterns:
+          - "@angular/*"
+          - "@tanstack/*"
+
+    - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+          interval: "monthly"
