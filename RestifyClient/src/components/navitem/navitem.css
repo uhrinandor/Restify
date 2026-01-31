@@ -1,0 +1,7 @@
+@reference "../../styles.css";
+@media (min-width: 1024px) {
+    .tooltip-responsive:before, .tooltip-responsive:after { display: none !important; }
+}
+@media (max-width: 1023px) {
+    .tooltip-responsive { @apply tooltip tooltip-right; }
+}

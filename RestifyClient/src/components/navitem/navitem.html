@@ -1,0 +1,12 @@
+<li>
+    <button
+        [routerLink]="route()"
+        routerLinkActive="active"
+        [attr.data-tip]="tip() || label()"
+        class="{{ class() }} tooltip-responsive flex items-center gap-4 px-3 w-full justify-center lg:justify-start"
+    >
+        <ng-content></ng-content>
+
+        <span class="hidden lg:inline whitespace-nowrap">{{ label() }}</span>
+    </button>
+</li>
