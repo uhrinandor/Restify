@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . ./
-RUN npm run bulild --configuration=production
+RUN npm run build --configuration=production
 
 FROM nginx:stable AS final
 EXPOSE 80
