@@ -6,8 +6,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . ./
-RUN npm run prebuild
-RUN ng build --configuration=production
+RUN npm run bulild --configuration=production
 
 FROM nginx:stable AS final
 EXPOSE 80
