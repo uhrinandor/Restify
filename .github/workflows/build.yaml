@@ -43,29 +43,6 @@ jobs:
                   name: openapi-spec
                   path: ./RestifyClient/openapi/RestifyServer.json
 
-            - name: Set up Docker Buildx
-              if: github.event_name == 'push'
-              uses: docker/setup-buildx-action@v3
-
-            - name: Set up QEMU
-              if: github.event_name == 'push'
-              uses: docker/setup-qemu-action@v3
-
-            - uses: docker/login-action@v3
-              if: github.event_name == 'push'
-              with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
-
-            - uses: docker/build-push-action@v6
-              if: github.event_name == 'push'
-              with:
-                  push: true
-                  file: ./RestifyServer/Dockerfile
-                  platforms: linux/amd64,linux/arm64
-                  tags: ghcr.io/${{ github.repository_owner }}/restify-server:latest
-
     build-client:
         runs-on: ubuntu-latest
         needs: [build-server]
@@ -101,40 +78,51 @@ jobs:
               working-directory: RestifyClient
               run: npm run test
 
+    deploy:
+        runs-on: ubuntu-latest
+        needs: [ build-server, build-client ]
+        if: github.event_name == 'push'
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+              with:
+                fetch-depth: 0
+                persist-credentials: true
+
             - name: Set up Docker Buildx
-              if: github.event_name == 'push'
               uses: docker/setup-buildx-action@v3
 
             - name: Set up QEMU
-              if: github.event_name == 'push'
               uses: docker/setup-qemu-action@v3
 
-            - uses: docker/login-action@v3
-              if: github.event_name == 'push'
+            - name: Download OpenAPI spec
+              uses: actions/download-artifact@v7
               with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+                name: openapi-spec
+                path: ./RestifyClient/openapi
 
-            - uses: docker/build-push-action@v6
-              if: github.event_name == 'push'
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Package Server
+              uses: docker/build-push-action@v6
+              with:
+                  push: true
+                  file: ./RestifyServer/Dockerfile
+                  platforms: linux/amd64,linux/arm64
+                  tags: ghcr.io/${{ github.repository_owner }}/restify-server:latest
+
+            - name: Package Client
+              uses: docker/build-push-action@v6
               with:
                   push: true
                   context: ./RestifyClient
                   platforms: linux/amd64,linux/arm64
                   file: ./RestifyClient/Dockerfile
                   tags: ghcr.io/${{ github.repository_owner }}/restify-client:latest
-
-    tag-build:
-        runs-on: ubuntu-latest
-        needs: [build-server, build-client]
-        if: github.event_name == 'push'
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v6
-              with:
-                  fetch-depth: 0
-                  persist-credentials: true
 
             - name: Tag
               run: |
