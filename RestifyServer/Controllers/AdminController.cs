@@ -54,7 +54,7 @@ public class AdminController(IAdminService adminService) : ControllerBase
     [HttpPut("{id}/password", Name = "UpdateAdminPassword")]
     [ProducesResponseType(typeof(OkResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> UpdatePassword([FromRoute] Guid id, [FromBody] UpdateAdminPassword credentials, CancellationToken ct)
+    public async Task<ActionResult> UpdatePassword([FromRoute] Guid id, [FromBody] UpdatePassword credentials, CancellationToken ct)
     {
         await adminService.UpdatePassword(id, credentials, ct);
         return NoContent();

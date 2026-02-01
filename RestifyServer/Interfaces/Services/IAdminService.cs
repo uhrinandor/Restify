@@ -11,6 +11,6 @@ public interface IAdminService
     Task<Admin?> FindById(Guid id, CancellationToken ct = default);
     Task<Admin?> Update(Guid id, UpdateAdmin admin, CancellationToken ct = default);
     Task<bool> Delete(Guid id, CancellationToken ct = default);
-    Task<bool> UpdatePassword(Guid id, UpdateAdminPassword credentials, CancellationToken ct = default);
+    Task<bool> UpdatePassword(Guid id, UpdatePassword credentials, CancellationToken ct = default);
 
 }

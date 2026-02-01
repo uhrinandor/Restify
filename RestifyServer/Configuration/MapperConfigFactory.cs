@@ -9,5 +9,6 @@ public static class MapperConfigFactory
     {
         cfg.CreateMap<Models.Entity, Entity>();
         cfg.CreateMap<Models.Admin, Admin>().IncludeBase<Models.Entity, Entity>();
+        cfg.CreateMap<Models.Waiter, Waiter>().IncludeBase<Models.Entity, Entity>();
     }
 }

@@ -296,7 +296,7 @@ public class AdminServiceTests
 
         var dbAdmin = new Models.Admin { Id = id, Username = "endor", Password = "HASH_OLD" };
 
-        var dto = new UpdateAdminPassword
+        var dto = new UpdatePassword
         (
             OldPassword: "old",
             NewPassword: "new"
@@ -333,7 +333,7 @@ public class AdminServiceTests
 
         var dbAdmin = new Models.Admin { Id = id, Password = "HASH_OLD" };
 
-        var dto = new UpdateAdminPassword
+        var dto = new UpdatePassword
         (
             OldPassword: "wrong",
             NewPassword: "new"
@@ -368,7 +368,7 @@ public class AdminServiceTests
             .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Admin, bool>>>(), ct))
             .ReturnsAsync((Models.Admin?)null);
 
-        var dto = new UpdateAdminPassword
+        var dto = new UpdatePassword
         (
             OldPassword: "old",
             NewPassword: "new"

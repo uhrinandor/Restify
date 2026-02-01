@@ -63,7 +63,7 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
         return true;
     }
 
-    public async Task<bool> UpdatePassword(Guid id, UpdateAdminPassword credentials, CancellationToken ct = default)
+    public async Task<bool> UpdatePassword(Guid id, UpdatePassword credentials, CancellationToken ct = default)
     {
         var dbAdmin = await LoadAdminAsync(id, ct);
 
