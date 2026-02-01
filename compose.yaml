@@ -13,6 +13,7 @@
         - ASPNETCORE_ENVIRONMENT=Production
         - ConnectionStrings__Default=Host=restify-db;Port=5432;Database=${DB_SOURCE};Username=${DB_USER};Password=${DB_PASSWORD}
         - CorsSettings__AllowedOrigins__0=http://127.0.0.1:4200
+        - CorsSettings__AllowedOrigins__1=http://localhost
     ports:
       - "8080:8080"
   client:
