@@ -11,25 +11,12 @@ public static class AppConfiguration
         return Config.GetValue<string>("Serilog:WriteTo:1:Args:serverUrl") ?? throw new Exception("Seq log url was not found...");
     }
 
-    public static void TestDbConnection(IServiceProvider Services)
+    public static List<string> GetCorsOrigins(ConfigurationManager Config)
     {
-        using (var scope = Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<RestifyContext>();
-            try
-            {
-                if (context.Database.CanConnect())
-                {
-                    Log.Information("DATABASE CONNECTED: {Host}",
-                        context.Database.GetDbConnection().DataSource);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "DATABASE REJECTED: App tried to connect to {Host}",
-                    context.Database.GetDbConnection().DataSource);
-                throw new Exception("DATABASE REJECTED: " + ex.Message);
-            }
-        }
+        var origins = Config.GetSection("CorsSettings:AllowedOrigins").Get<List<string>>();
+        if (origins == null || origins?.Count == 0) return [];
+
+        return origins!;
     }
+
 }

@@ -1,0 +1,19 @@
+<form [formGroup]="form()" class="py-4 flex flex-col gap-4">
+    <label class="form-control w-full">
+        <div class="label"><span class="label-text">Username</span></div>
+        <input type="text" formControlName="username" class="input input-bordered outline-0 w-full" />
+    </label>
+    <label class="form-control w-full">
+        <div class="label mr-4"><span class="label-text">Access Level</span></div>
+        <select formControlName="accessLevel" class="select select-bordered outline-0">
+            <option [ngValue]="0">Read</option>
+            <option [ngValue]="1">Write</option>
+        </select>
+    </label>
+    @if(password()){
+        <label class="form-control w-full">
+            <div class="label"><span class="label-text">Password</span></div>
+            <input type="password" formControlName="password" class="input input-bordered outline-0 w-full" />
+        </label>
+    }
+</form>

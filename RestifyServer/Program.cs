@@ -27,7 +27,17 @@ builder.Services.AddDbContext<RestifyContext>((sp, options) =>
 
     options.UseLoggerFactory(new LoggerFactory());
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        var allowedOrigins = AppConfiguration.GetCorsOrigins(builder.Configuration);
+        foreach (var origin in allowedOrigins)
+        {
+            policy.WithOrigins(origin).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        }
+    });
+});
 builder.Services.AddRepositories();
 builder.Services.AddMapper();
 builder.Services.AddUtils();
@@ -37,6 +47,7 @@ builder.Services.AddSwagger();
 builder.Services.AddOpenApi();
 
 WebApplication app = builder.Build();
+app.UseCors("CorsPolicy");
 app.TestDbConnection();
 app.MapOpenApi();
 

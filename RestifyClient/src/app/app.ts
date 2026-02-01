@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {Navitem} from '../components/navitem/navitem';
+import {ToastrModule} from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
