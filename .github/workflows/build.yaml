@@ -43,6 +43,14 @@ jobs:
                   name: openapi-spec
                   path: ./RestifyClient/openapi/RestifyServer.json
 
+            - name: Set up Docker Buildx
+              if: github.event_name == 'push'
+              uses: docker/setup-buildx-action@v3
+
+            - name: Set up QEMU
+              if: github.event_name == 'push'
+              uses: docker/setup-qemu-action@v3
+
             - uses: docker/login-action@v3
               if: github.event_name == 'push'
               with:
@@ -55,6 +63,7 @@ jobs:
               with:
                   push: true
                   file: ./RestifyServer/Dockerfile
+                  platforms: linux/amd64,linux/arm64
                   tags: ghcr.io/${{ github.repository_owner }}/restify-server:latest
 
     build-client:
@@ -92,6 +101,14 @@ jobs:
               working-directory: RestifyClient
               run: npm run test
 
+            - name: Set up Docker Buildx
+              if: github.event_name == 'push'
+              uses: docker/setup-buildx-action@v3
+
+            - name: Set up QEMU
+              if: github.event_name == 'push'
+              uses: docker/setup-qemu-action@v3
+
             - uses: docker/login-action@v3
               if: github.event_name == 'push'
               with:
@@ -104,6 +121,7 @@ jobs:
               with:
                   push: true
                   context: ./RestifyClient
+                  platforms: linux/amd64,linux/arm64
                   file: ./RestifyClient/Dockerfile
                   tags: ghcr.io/${{ github.repository_owner }}/restify-client:latest
 

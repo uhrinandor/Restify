@@ -1,6 +1,6 @@
 ﻿services:
   server:
-    image: restify-server
+    image: ghcr.io/uhrinandor/restify-server:latest
     depends_on:
       - postgres
       - seq
@@ -17,7 +17,7 @@
     ports:
       - "8080:8080"
   client:
-    image: restify-client
+    image: ghcr.io/uhrinandor/restify-client:latest
     depends_on:
         - postgres
         - seq
