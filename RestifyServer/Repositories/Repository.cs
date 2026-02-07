@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using RestifyServer.Interfaces;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Models;
 using RestifyServer.Repository;
@@ -18,35 +17,38 @@ public abstract class Repository<T> : IRepository<T> where T : Entity, new()
         _set = db.Set<T>();
     }
 
-    public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, bool asNoTracking = true)
-    {
-        if (!asNoTracking) return await _set.FindAsync(new object[] { id }, ct);
+    protected virtual IQueryable<T> ListQueryable(bool asNoTracking = true) => asNoTracking ? _set.AsNoTracking() : _set;
+    protected virtual IQueryable<T> SingleQueryable(bool asNoTracking = true) => asNoTracking ? _set.AsNoTracking() : _set;
 
-        return await _set.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, bool asNoTracking = true)
+    {
+        var q = SingleQueryable(asNoTracking);
+
+        return await q.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
     public Task<bool> ExistsAsync(Guid id, CancellationToken ct = default) => _set.AsNoTracking().AnyAsync(x => x.Id == id, ct);
 
-    public virtual Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
+    public Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
         bool asNoTracking = true)
     {
-        var q = asNoTracking ? _set.AsNoTracking() : _set;
+        var q = SingleQueryable(asNoTracking);
 
         return q.FirstOrDefaultAsync(predicate, ct);
     }
 
-    public virtual Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
+    public Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
         bool asNoTracking = true)
     {
-        var q = asNoTracking ? _set.AsNoTracking() : _set;
+        var q = ListQueryable(asNoTracking);
 
         return q.Where(predicate).ToListAsync(ct);
     }
 
-    public virtual Task<List<T>> ListAsync(CancellationToken ct = default,
+    public Task<List<T>> ListAsync(CancellationToken ct = default,
         bool asNoTracking = true)
     {
-        var q = asNoTracking ? _set.AsNoTracking() : _set;
+        var q = ListQueryable(asNoTracking);
 
         return q.ToListAsync(ct);
     }

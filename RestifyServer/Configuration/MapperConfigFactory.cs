@@ -12,5 +12,6 @@ public static class MapperConfigFactory
         cfg.CreateMap<Models.Waiter, Waiter>().IncludeBase<Models.Entity, Entity>();
         cfg.CreateMap<Models.Category, Category>().IncludeBase<Models.Entity, Entity>();
         cfg.CreateMap<Models.Category, NestedCategory>().IncludeBase<Models.Entity, Entity>();
+        cfg.CreateMap<Models.Product, Product>().IncludeBase<Models.Entity, Entity>();
     }
 }

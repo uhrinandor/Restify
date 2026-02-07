@@ -3,4 +3,4 @@ using RestifyServer.TypeContracts;
 
 namespace RestifyServer.Interfaces.Services;
 
-public interface ICategoryService : ICrudService<Category, CreateCategory, UpdateCategory, FindCategory>;
+public interface IProductService : ICrudService<Product, CreateProduct, UpdateProduct, FindProduct>;

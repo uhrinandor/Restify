@@ -77,7 +77,7 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
 
     private async Task<Models.Waiter> LoadWaiterAsync(Guid id, CancellationToken ct = default)
     {
-        var dbWaiter = await waiterRepo.FirstOrDefaultAsync(a => a.Id == id, ct, false) ?? throw new NotFoundException(id, typeof(Waiter));
+        var dbWaiter = await waiterRepo.GetByIdAsync(id, ct, false) ?? throw new NotFoundException(id, typeof(Waiter));
 
         return dbWaiter;
     }

@@ -81,7 +81,7 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
 
     private async Task<Models.Category> LoadCategoryAsync(Guid id, CancellationToken ct = default)
     {
-        var dbCategory = await categoryRepo.FirstOrDefaultAsync(x => x.Id == id, ct, false) ?? throw new NotFoundException(id, typeof(Models.Category));
+        var dbCategory = await categoryRepo.GetByIdAsync(id, ct, false) ?? throw new NotFoundException(id, typeof(Category));
 
         return dbCategory;
     }

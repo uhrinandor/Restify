@@ -75,7 +75,7 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
 
     private async Task<Models.Admin> LoadAdminAsync(Guid id, CancellationToken ct = default)
     {
-        var dbAdmin = await adminRepo.FirstOrDefaultAsync(a => a.Id == id, ct, false) ?? throw new NotFoundException(id, typeof(Admin));
+        var dbAdmin = await adminRepo.GetByIdAsync(id, ct, false) ?? throw new NotFoundException(id, typeof(Admin));
         return dbAdmin;
     }
 }
