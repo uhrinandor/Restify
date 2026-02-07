@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IWaiterService, WaiterService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         return services;
     }
 

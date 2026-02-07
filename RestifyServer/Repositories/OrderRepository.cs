@@ -3,7 +3,4 @@ using RestifyServer.Repository;
 
 namespace RestifyServer.Repositories;
 
-public class OrderRepository : Repository<Order>
-{
-    public OrderRepository(RestifyContext db) : base(db) { }
-}
+public class OrderRepository(RestifyContext db) : Repository<Order>(db);

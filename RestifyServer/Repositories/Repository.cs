@@ -7,10 +7,10 @@ using RestifyServer.Repository;
 
 namespace RestifyServer.Repositories;
 
-public class Repository<T> : IRepository<T> where T : Entity, new()
+public abstract class Repository<T> : IRepository<T> where T : Entity, new()
 {
     private readonly RestifyContext _db;
-    private readonly DbSet<T> _set;
+    protected readonly DbSet<T> _set;
 
     public Repository(RestifyContext db)
     {
@@ -18,7 +18,7 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
         _set = db.Set<T>();
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, bool asNoTracking = true)
+    public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default, bool asNoTracking = true)
     {
         if (!asNoTracking) return await _set.FindAsync(new object[] { id }, ct);
 
@@ -27,7 +27,7 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
 
     public Task<bool> ExistsAsync(Guid id, CancellationToken ct = default) => _set.AsNoTracking().AnyAsync(x => x.Id == id, ct);
 
-    public Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
+    public virtual Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
         bool asNoTracking = true)
     {
         var q = asNoTracking ? _set.AsNoTracking() : _set;
@@ -35,7 +35,7 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
         return q.FirstOrDefaultAsync(predicate, ct);
     }
 
-    public Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
+    public virtual Task<List<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default,
         bool asNoTracking = true)
     {
         var q = asNoTracking ? _set.AsNoTracking() : _set;
@@ -43,7 +43,7 @@ public class Repository<T> : IRepository<T> where T : Entity, new()
         return q.Where(predicate).ToListAsync(ct);
     }
 
-    public Task<List<T>> ListAsync(CancellationToken ct = default,
+    public virtual Task<List<T>> ListAsync(CancellationToken ct = default,
         bool asNoTracking = true)
     {
         var q = asNoTracking ? _set.AsNoTracking() : _set;

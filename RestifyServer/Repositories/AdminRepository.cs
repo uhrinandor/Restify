@@ -4,7 +4,4 @@ using RestifyServer.Repository;
 
 namespace RestifyServer.Repositories;
 
-public class AdminRepository : Repository<Admin>
-{
-    public AdminRepository(RestifyContext db) : base(db) { }
-}
+public class AdminRepository(RestifyContext db) : Repository<Admin>(db);

@@ -4,13 +4,7 @@ using RestifyServer.TypeContracts;
 
 namespace RestifyServer.Interfaces.Services;
 
-public interface IAdminService
+public interface IAdminService : ICrudService<Admin, CreateAdmin, UpdateAdmin, FindAdmin>
 {
-    Task<List<Admin>> List(FindAdmin query, CancellationToken ct = default);
-    Task<Admin> Create(CreateAdmin admin, CancellationToken ct = default);
-    Task<Admin?> FindById(Guid id, CancellationToken ct = default);
-    Task<Admin?> Update(Guid id, UpdateAdmin admin, CancellationToken ct = default);
-    Task<bool> Delete(Guid id, CancellationToken ct = default);
     Task<bool> UpdatePassword(Guid id, UpdatePassword credentials, CancellationToken ct = default);
-
 }

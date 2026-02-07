@@ -4,7 +4,4 @@ using RestifyServer.Repository;
 
 namespace RestifyServer.Repositories;
 
-public class WaiterRepository : Repository<Waiter>
-{
-    public WaiterRepository(RestifyContext db) : base(db) { }
-}
+public class WaiterRepository(RestifyContext db) : Repository<Waiter>(db);

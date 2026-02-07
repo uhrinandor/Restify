@@ -16,7 +16,7 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
         var p = Predicate.True<Models.Waiter>();
         if (!string.IsNullOrEmpty(query.Username)) p = p.And(a => a.Username == query.Username);
         if (!string.IsNullOrEmpty(query.Name)) p = p.And(a => a.Name == query.Name);
-        if (query.id != null) p = p.And<Models.Waiter>(a => a.Id == query.id);
+        if (query.id != null) p = p.And(a => a.Id == query.id);
         var list = await waiterRepo.ListAsync(p, ct);
 
         return mapper.Map<List<Waiter>>(list);
@@ -44,12 +44,12 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
         return mapper.Map<Waiter>(dbWaiter);
     }
 
-    public async Task<Waiter?> Update(Guid id, UpdateWaiter waiter, CancellationToken ct = default)
+    public async Task<Waiter?> Update(Guid id, UpdateWaiter data, CancellationToken ct = default)
     {
         var dbWaiter = await LoadWaiterAsync(id, ct);
 
-        if (!string.IsNullOrEmpty(waiter.Username)) dbWaiter.Username = waiter.Username;
-        if (!string.IsNullOrEmpty(waiter.Name)) dbWaiter.Name = waiter.Name;
+        if (!string.IsNullOrEmpty(data.Username)) dbWaiter.Username = data.Username;
+        if (!string.IsNullOrEmpty(data.Name)) dbWaiter.Name = data.Name;
         await unitOfWork.SaveChangesAsync(ct);
         return mapper.Map<Waiter>(dbWaiter);
     }

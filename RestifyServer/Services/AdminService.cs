@@ -1,6 +1,5 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using RestifyServer.Dto;
 using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
@@ -16,8 +15,8 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
     public async Task<List<Admin>> List(FindAdmin query, CancellationToken ct = default)
     {
         var p = Predicate.True<Models.Admin>();
-        if (query.Id != null) p = p.And<Models.Admin>(a => a.Id == query.Id);
-        if (query.Username != null) p = p.And<Models.Admin>(a => a.Username == query.Username);
+        if (query.Id != null) p = p.And(a => a.Id == query.Id);
+        if (query.Username != null) p = p.And(a => a.Username == query.Username);
         if (query.AccessLevel != null) p = p.And(a => a.AccessLevel == query.AccessLevel);
         var list = await adminRepo.ListAsync(p, ct, asNoTracking: true);
         return mapper.Map<List<Admin>>(list);
@@ -44,12 +43,12 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
         return mapper.Map<Admin>(dbAdmin);
     }
 
-    public async Task<Admin?> Update(Guid id, UpdateAdmin admin, CancellationToken ct = default)
+    public async Task<Admin?> Update(Guid id, UpdateAdmin data, CancellationToken ct = default)
     {
         var dbAdmin = await LoadAdminAsync(id, ct);
 
-        if (admin.Username != null) dbAdmin.Username = admin.Username;
-        if (admin.WriteMode is bool writeMode) dbAdmin.AccessLevel = writeMode ? Permission.Write : Permission.Read;
+        if (data.Username != null) dbAdmin.Username = data.Username;
+        if (data.WriteMode is bool writeMode) dbAdmin.AccessLevel = writeMode ? Permission.Write : Permission.Read;
         await unitOfWork.SaveChangesAsync(ct);
         return mapper.Map<Admin>(dbAdmin);
     }
