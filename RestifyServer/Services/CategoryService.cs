@@ -13,8 +13,8 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
     public async Task<List<Category>> List(FindCategory query, CancellationToken ct = default)
     {
         var p = Predicate.True<Models.Category>();
-        if(query.Id != null) p = p.And(a => a.Id == query.Id);
-        if(!string.IsNullOrEmpty(query.Name)) p = p.And(a => a.Name == query.Name);
+        if (query.Id != null) p = p.And(a => a.Id == query.Id);
+        if (!string.IsNullOrEmpty(query.Name)) p = p.And(a => a.Name == query.Name);
         if (query.Parent?.Id != null) p = p.And(a => a.Parent != null && a.Parent.Id == query.Parent.Id);
         if (query.Parent?.Name != null) p = p.And(a => a.Parent != null && a.Parent.Name == query.Parent.Name);
 
