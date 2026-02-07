@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { AdminComponent } from './admin.component';
 import {provideQueryClient, QueryClient} from '@tanstack/angular-query-experimental';
-import {injectCreateAdmin, injectUpdateAdmin, injectUpdateAdminPassword} from '../../api/generated/admin/admin';
+import {injectCreateAdmins, injectUpdateAdmins, injectUpdateAdminPassword} from '../../api/generated/admins/admins';
 import {inject} from '@angular/core';
 import {AdminService} from './admin.service';
 
