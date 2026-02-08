@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class TableService(IRepository<Models.Table> tableRepo, IMapper mapper, IUnitOfWork unitOfWork) : BaseService<Models.Table>(tableRepo), ITableService
+public class TableService(IRepository<Models.Table> tableRepo, IMapper mapper) : EntityService<Models.Table>(tableRepo), ITableService
 {
     public async Task<List<Table>> List(FindTable query, CancellationToken ct = default)
     {
@@ -20,7 +20,7 @@ public class TableService(IRepository<Models.Table> tableRepo, IMapper mapper, I
         return mapper.Map<List<Table>>(list);
     }
 
-    public async Task<Table> Create(CreateTable data, CancellationToken ct = default)
+    public Task<Table> Create(CreateTable data, CancellationToken ct = default)
     {
         var dbTable = new Models.Table()
         {
@@ -28,8 +28,8 @@ public class TableService(IRepository<Models.Table> tableRepo, IMapper mapper, I
         };
 
         EntityRepository.Add(dbTable);
-        await unitOfWork.SaveChangesAsync(ct);
-        return mapper.Map<Table>(dbTable);
+        var mapped = mapper.Map<Table>(dbTable);
+        return Task.FromResult(mapped);
     }
 
     public async Task<Table?> FindById(Guid id, CancellationToken ct = default)
@@ -43,7 +43,6 @@ public class TableService(IRepository<Models.Table> tableRepo, IMapper mapper, I
         var dbTable = await LoadEntityAsync(id, ct);
         if (data.Number != null) dbTable.Number = data.Number ?? dbTable.Number;
 
-        await unitOfWork.SaveChangesAsync(ct);
         return mapper.Map<Table>(dbTable);
     }
 
@@ -52,7 +51,6 @@ public class TableService(IRepository<Models.Table> tableRepo, IMapper mapper, I
         var dbTable = await LoadEntityAsync(id, ct);
         EntityRepository.Remove(dbTable);
 
-        await unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

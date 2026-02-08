@@ -12,7 +12,7 @@ using Serilog;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .Enrich.WithProperty("Enviroment", builder.Environment.EnvironmentName)
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
     .Enrich.WithProperty("ApplicationName", builder.Environment.ApplicationName)
     .WriteTo.Seq(AppConfiguration.GetSeqUrl(builder.Configuration))
     .CreateLogger();

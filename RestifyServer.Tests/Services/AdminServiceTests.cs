@@ -15,7 +15,6 @@ namespace RestifyServer.Tests.Services;
 public class AdminServiceTests
 {
     private readonly Mock<IRepository<Models.Admin>> _adminRepository = new();
-    private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IPasswordHasher<Models.Admin>> _passwordHasher = new();
     private readonly Mock<IMapper> _mapper = new();
 
@@ -23,7 +22,7 @@ public class AdminServiceTests
 
     public AdminServiceTests()
     {
-        _sut = new AdminService(_adminRepository.Object, _unitOfWork.Object, _passwordHasher.Object, _mapper.Object);
+        _sut = new AdminService(_adminRepository.Object, _passwordHasher.Object, _mapper.Object);
     }
 
     [Fact]
@@ -64,9 +63,6 @@ public class AdminServiceTests
 
         // Assert: repo.Add called once
         _adminRepository.Verify(r => r.Add(It.IsAny<RestifyServer.Models.Admin>()), Times.Once);
-
-        // Assert: SaveChangesAsync called once with same token
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
 
         // Assert: the entity passed to Add has correct fields set
         addedEntity.Should().NotBeNull();
@@ -169,7 +165,6 @@ public class AdminServiceTests
         dbAdmin.Username.Should().Be("new");
         dbAdmin.AccessLevel.Should().Be(Permission.Write);
 
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
         _mapper.Verify(m => m.Map<Admin>(It.Is<object>(o => ReferenceEquals(o, dbAdmin))), Times.Once);
 
         result.Should().NotBeNull();
@@ -211,7 +206,6 @@ public class AdminServiceTests
         dbAdmin.Username.Should().Be("same");
         dbAdmin.AccessLevel.Should().Be(Permission.Read);
 
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
 
         result.Should().NotBeNull();
         result.Should().BeSameAs(mapped);
@@ -239,7 +233,6 @@ public class AdminServiceTests
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
 
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
         _mapper.Verify(m => m.Map<Admin>(It.IsAny<object>()), Times.Never);
     }
 
@@ -263,7 +256,6 @@ public class AdminServiceTests
         result.Should().BeTrue();
 
         _adminRepository.Verify(r => r.Remove(It.Is<Models.Admin>(a => ReferenceEquals(a, dbAdmin))), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
     }
 
     [Fact]
@@ -284,7 +276,6 @@ public class AdminServiceTests
         await act.Should().ThrowAsync<NotFoundException>();
 
         _adminRepository.Verify(r => r.Remove(It.IsAny<Models.Admin>()), Times.Never);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -321,7 +312,6 @@ public class AdminServiceTests
         result.Should().BeTrue();
         dbAdmin.Password.Should().Be("HASH_NEW");
 
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
     }
 
     [Fact]
@@ -354,7 +344,6 @@ public class AdminServiceTests
         await act.Should().ThrowAsync<UnauthorizedAccessException>();
 
         _passwordHasher.Verify(h => h.HashPassword(It.IsAny<Models.Admin>(), It.IsAny<string>()), Times.Never);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -380,7 +369,6 @@ public class AdminServiceTests
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
 
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

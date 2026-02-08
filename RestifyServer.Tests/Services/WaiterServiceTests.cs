@@ -14,7 +14,6 @@ namespace RestifyServer.Tests.Services;
 public class WaiterServiceTests
 {
     private readonly Mock<IRepository<Models.Waiter>> _waiterRepository = new();
-    private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IPasswordHasher<Models.Waiter>> _passwordHasher = new();
     private readonly Mock<IMapper> _mapper = new();
 
@@ -22,7 +21,7 @@ public class WaiterServiceTests
 
     public WaiterServiceTests()
     {
-        _sut = new WaiterService(_waiterRepository.Object, _unitOfWork.Object, _passwordHasher.Object, _mapper.Object);
+        _sut = new WaiterService(_waiterRepository.Object, _passwordHasher.Object, _mapper.Object);
     }
 
     [Fact]
@@ -54,7 +53,6 @@ public class WaiterServiceTests
         // Assert
         result.Should().BeSameAs(mappedResult);
         _waiterRepository.Verify(r => r.Add(It.IsAny<Models.Waiter>()), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
 
         addedEntity.Should().NotBeNull();
         addedEntity!.Username.Should().Be(input.Username);
@@ -119,7 +117,6 @@ public class WaiterServiceTests
         // Assert
         dbWaiter.Username.Should().Be("new");
         dbWaiter.Name.Should().Be("New Name");
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeSameAs(mapped);
     }
 
@@ -139,7 +136,6 @@ public class WaiterServiceTests
         // Assert
         result.Should().BeTrue();
         _waiterRepository.Verify(r => r.Remove(dbWaiter), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -165,7 +161,6 @@ public class WaiterServiceTests
         // Assert
         result.Should().BeTrue();
         dbWaiter.Password.Should().Be("NEW_HASH");
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

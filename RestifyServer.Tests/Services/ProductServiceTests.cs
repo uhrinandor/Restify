@@ -14,7 +14,6 @@ public class ProductServiceTests
 {
     private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
     private readonly Mock<IRepository<Models.Product>> _productRepository = new();
-    private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly ProductService _sut;
 
@@ -23,8 +22,7 @@ public class ProductServiceTests
         _sut = new ProductService(
             _categoryRepository.Object,
             _productRepository.Object,
-            _mapper.Object,
-            _unitOfWork.Object);
+            _mapper.Object);
     }
 
 
@@ -55,7 +53,6 @@ public class ProductServiceTests
         result.Name.Should().Be("Burger");
 
         _productRepository.Verify(r => r.Add(It.Is<Models.Product>(p => p.Category == dbCategory)), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(ct), Times.Once);
     }
 
     [Fact]
@@ -100,7 +97,6 @@ public class ProductServiceTests
         dbProduct.Description.Should().Be("New Desc");
         dbProduct.Price.Should().Be(99.99m);
         dbProduct.Category.Should().Be(newCat);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -183,6 +179,5 @@ public class ProductServiceTests
         // Assert
         result.Should().BeTrue();
         _productRepository.Verify(r => r.Remove(dbProduct), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

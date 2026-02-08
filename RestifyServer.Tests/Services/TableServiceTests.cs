@@ -14,16 +14,14 @@ public class TableServiceTests
 {
     private readonly Mock<IRepository<Models.Table>> _tableRepoMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<IUnitOfWork> _uowMock;
     private readonly TableService _sut;
 
     public TableServiceTests()
     {
         _tableRepoMock = new Mock<IRepository<Models.Table>>();
         _mapperMock = new Mock<IMapper>();
-        _uowMock = new Mock<IUnitOfWork>();
 
-        _sut = new TableService(_tableRepoMock.Object, _mapperMock.Object, _uowMock.Object);
+        _sut = new TableService(_tableRepoMock.Object, _mapperMock.Object);
     }
 
     [Fact]
@@ -86,14 +84,12 @@ public class TableServiceTests
         // Arrange
         var ct = new CancellationTokenSource().Token;
         var dto = new CreateTable(5);
-        _uowMock.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
         // Act
         await _sut.Create(dto, ct);
 
         // Assert
         _tableRepoMock.Verify(r => r.Add(It.Is<Models.Table>(t => t.Number == 5)), Times.Once);
-        _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -113,7 +109,6 @@ public class TableServiceTests
 
         // Assert
         existing.Number.Should().Be(10);
-        _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -146,7 +141,6 @@ public class TableServiceTests
         // Assert
         result.Should().BeTrue();
         _tableRepoMock.Verify(r => r.Remove(existing), Times.Once);
-        _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

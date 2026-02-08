@@ -13,13 +13,12 @@ namespace RestifyServer.Tests.Services;
 public class CategoryServiceTests
 {
     private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
-    private readonly Mock<IUnitOfWork> _unitOfWork = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly CategoryService _sut;
 
     public CategoryServiceTests()
     {
-        _sut = new CategoryService(_categoryRepository.Object, _mapper.Object, _unitOfWork.Object);
+        _sut = new CategoryService(_categoryRepository.Object, _mapper.Object);
     }
 
     [Fact]
@@ -84,7 +83,6 @@ public class CategoryServiceTests
         // Assert
         result.Name.Should().Be("Hardware");
         _categoryRepository.Verify(r => r.Add(It.Is<Models.Category>(c => c.Name == "Hardware")), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -94,7 +92,7 @@ public class CategoryServiceTests
         var ct = new CancellationTokenSource().Token;
         var parentId = Guid.NewGuid();
         var parentEntity = new Models.Category { Id = parentId, Name = "Root" };
-        var input = new CreateCategory("Child", new Category { Id = parentEntity.Id });
+        var input = new CreateCategory("Child", new NestedCategory { Id = parentEntity.Id });
 
         _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(parentEntity);
@@ -150,7 +148,6 @@ public class CategoryServiceTests
 
         // Assert
         dbCategory.Parent.Should().Be(newParent);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Theory]
@@ -213,6 +210,5 @@ public class CategoryServiceTests
         // Assert
         result.Should().BeTrue();
         _categoryRepository.Verify(r => r.Remove(entity), Times.Once);
-        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

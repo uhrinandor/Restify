@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestifyServer.ExceptionFilters;
+using RestifyServer.Filters;
 
 namespace RestifyServer.Configuration;
 
@@ -11,6 +12,7 @@ public static class ControllerConfigFactory
         options.Filters.Add<GlobalExceptionFilter>();
         options.Filters.Add<DbExceptionFilter>();
         options.Filters.Add<DomainExceptionFilter>();
+        options.Filters.Add<UnitOfWorkFilter>();
 
         // Problem details
         options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ProblemDetails), StatusCodes.Status400BadRequest));

@@ -9,7 +9,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitOfWork, IPasswordHasher<Models.Admin> passwordHasher, IMapper mapper) : BaseService<Models.Admin>(adminRepo), IAdminService
+public class AdminService(IRepository<Models.Admin> adminRepo, IPasswordHasher<Models.Admin> passwordHasher, IMapper mapper) : EntityService<Models.Admin>(adminRepo), IAdminService
 {
     public async Task<List<Admin>> List(FindAdmin query, CancellationToken ct = default)
     {
@@ -21,7 +21,7 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
         return mapper.Map<List<Admin>>(list);
     }
 
-    public async Task<Admin> Create(CreateAdmin admin, CancellationToken ct = default)
+    public Task<Admin> Create(CreateAdmin admin, CancellationToken ct = default)
     {
         Models.Admin dbAdmin = new()
         {
@@ -31,9 +31,8 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
         dbAdmin.Password = passwordHasher.HashPassword(dbAdmin, admin.Password);
         EntityRepository.Add(dbAdmin);
 
-        await unitOfWork.SaveChangesAsync(ct);
-
-        return mapper.Map<Admin>(dbAdmin);
+        var mapped = mapper.Map<Admin>(dbAdmin);
+        return Task.FromResult(mapped);
     }
 
     public async Task<Admin?> FindById(Guid id, CancellationToken ct = default)
@@ -48,7 +47,6 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
 
         if (data.Username != null) dbAdmin.Username = data.Username;
         if (data.WriteMode is bool writeMode) dbAdmin.AccessLevel = writeMode ? Permission.Write : Permission.Read;
-        await unitOfWork.SaveChangesAsync(ct);
         return mapper.Map<Admin>(dbAdmin);
     }
 
@@ -56,7 +54,6 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
     {
         var dbAdmin = await LoadEntityAsync(id, ct);
         EntityRepository.Remove(dbAdmin);
-        await unitOfWork.SaveChangesAsync(ct);
 
         return true;
     }
@@ -68,7 +65,6 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IUnitOfWork unitO
         if (passwordHasher.VerifyHashedPassword(dbAdmin, dbAdmin.Password, credentials.OldPassword) == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException();
         dbAdmin.Password = passwordHasher.HashPassword(dbAdmin, credentials.NewPassword);
-        await unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

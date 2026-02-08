@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper mapper, IUnitOfWork unitOfWork) : BaseService<Models.Category>(categoryRepo), ICategoryService
+public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper mapper) : EntityService<Models.Category>(categoryRepo), ICategoryService
 {
     public async Task<List<Category>> List(FindCategory query, CancellationToken ct = default)
     {
@@ -40,8 +40,6 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
 
         EntityRepository.Add(dbCategory);
 
-        await unitOfWork.SaveChangesAsync(ct);
-
         return mapper.Map<Category>(dbCategory);
     }
 
@@ -64,8 +62,6 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
             dbCategory.Parent = parent;
         }
 
-        await unitOfWork.SaveChangesAsync(ct);
-
         return mapper.Map<Category>(dbCategory);
     }
 
@@ -75,7 +71,6 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
 
         EntityRepository.Remove(dbCategory);
 
-        await unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }

@@ -4,7 +4,7 @@ using RestifyServer.Models;
 
 namespace RestifyServer.Services;
 
-public abstract class BaseService<TEntity>(IRepository<TEntity> repository) where TEntity : Entity
+public abstract class EntityService<TEntity>(IRepository<TEntity> repository) where TEntity : Entity
 {
     protected readonly IRepository<TEntity> EntityRepository = repository;
     protected async Task<TEntity> LoadEntityAsync(Guid id, CancellationToken ct = default)

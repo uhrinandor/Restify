@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class ProductService(IRepository<Models.Category> categoryRepo, IRepository<Models.Product> productRepository, IMapper mapper, IUnitOfWork unitOfWork) : BaseService<Models.Product>(productRepository), IProductService
+public class ProductService(IRepository<Models.Category> categoryRepo, IRepository<Models.Product> productRepository, IMapper mapper) : EntityService<Models.Product>(productRepository), IProductService
 {
     public async Task<List<Product>> List(FindProduct query, CancellationToken ct = default)
     {
@@ -36,7 +36,6 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
         };
 
         EntityRepository.Add(dbProduct);
-        await unitOfWork.SaveChangesAsync(ct);
 
         return mapper.Map<Product>(dbProduct);
     }
@@ -62,7 +61,6 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
             dbProduct.Category = dbCategory;
         }
 
-        await unitOfWork.SaveChangesAsync(ct);
         return mapper.Map<Product>(dbProduct);
     }
 
@@ -72,7 +70,6 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
 
         EntityRepository.Remove(dbProduct);
 
-        await unitOfWork.SaveChangesAsync(ct);
         return true;
     }
 }
