@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
@@ -9,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork unitOfWork, IPasswordHasher<Models.Waiter> passwordHasher, IMapper mapper) : IWaiterService
+public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork unitOfWork, IPasswordHasher<Models.Waiter> passwordHasher, IMapper mapper) : BaseService<Models.Waiter>(waiterRepo), IWaiterService
 {
     public async Task<List<Waiter>> List(FindWaiter query, CancellationToken ct = default)
     {
@@ -17,7 +16,7 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
         if (!string.IsNullOrEmpty(query.Username)) p = p.And(a => a.Username == query.Username);
         if (!string.IsNullOrEmpty(query.Name)) p = p.And(a => a.Name == query.Name);
         if (query.id != null) p = p.And(a => a.Id == query.id);
-        var list = await waiterRepo.ListAsync(p, ct);
+        var list = await EntityRepository.ListAsync(p, ct);
 
         return mapper.Map<List<Waiter>>(list);
     }
@@ -30,7 +29,7 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
             Name = waiter.Name
         };
         dbWaiter.Password = passwordHasher.HashPassword(dbWaiter, waiter.Password);
-        waiterRepo.Add(dbWaiter);
+        EntityRepository.Add(dbWaiter);
 
         await unitOfWork.SaveChangesAsync(ct);
 
@@ -39,14 +38,14 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
 
     public async Task<Waiter?> FindById(Guid id, CancellationToken ct = default)
     {
-        var dbWaiter = await LoadWaiterAsync(id, ct);
+        var dbWaiter = await LoadEntity(id, ct);
 
         return mapper.Map<Waiter>(dbWaiter);
     }
 
     public async Task<Waiter?> Update(Guid id, UpdateWaiter data, CancellationToken ct = default)
     {
-        var dbWaiter = await LoadWaiterAsync(id, ct);
+        var dbWaiter = await LoadEntityAsync(id, ct);
 
         if (!string.IsNullOrEmpty(data.Username)) dbWaiter.Username = data.Username;
         if (!string.IsNullOrEmpty(data.Name)) dbWaiter.Name = data.Name;
@@ -56,9 +55,9 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
 
     public async Task<bool> Delete(Guid id, CancellationToken ct = default)
     {
-        var dbWaiter = await LoadWaiterAsync(id, ct);
+        var dbWaiter = await LoadEntityAsync(id, ct);
 
-        waiterRepo.Remove(dbWaiter);
+        EntityRepository.Remove(dbWaiter);
 
         await unitOfWork.SaveChangesAsync(ct);
         return true;
@@ -66,19 +65,12 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IUnitOfWork un
 
     public async Task<bool> UpdatePassword(Guid id, UpdatePassword credentials, CancellationToken ct = default)
     {
-        var dbWaiter = await LoadWaiterAsync(id, ct);
+        var dbWaiter = await LoadEntityAsync(id, ct);
 
         if (passwordHasher.VerifyHashedPassword(dbWaiter, dbWaiter.Password, credentials.OldPassword) == PasswordVerificationResult.Failed)
             throw new UnauthorizedAccessException();
         dbWaiter.Password = passwordHasher.HashPassword(dbWaiter, credentials.NewPassword);
         await unitOfWork.SaveChangesAsync(ct);
         return true;
-    }
-
-    private async Task<Models.Waiter> LoadWaiterAsync(Guid id, CancellationToken ct = default)
-    {
-        var dbWaiter = await waiterRepo.GetByIdAsync(id, ct, false) ?? throw new NotFoundException(id, typeof(Waiter));
-
-        return dbWaiter;
     }
 }

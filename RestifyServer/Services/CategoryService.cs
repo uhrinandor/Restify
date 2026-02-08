@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper mapper, IUnitOfWork unitOfWork) : ICategoryService
+public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper mapper, IUnitOfWork unitOfWork) : BaseService<Models.Category>(categoryRepo), ICategoryService
 {
     public async Task<List<Category>> List(FindCategory query, CancellationToken ct = default)
     {
@@ -18,7 +18,7 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
         if (query.Parent?.Id != null) p = p.And(a => a.Parent != null && a.Parent.Id == query.Parent.Id);
         if (query.Parent?.Name != null) p = p.And(a => a.Parent != null && a.Parent.Name == query.Parent.Name);
 
-        var list = await categoryRepo.ListAsync(p, ct);
+        var list = await EntityRepository.ListAsync(p, ct);
 
         return mapper.Map<List<Category>>(list);
     }
@@ -29,7 +29,7 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
 
         if (data.Parent != null)
         {
-            parent = await LoadCategoryAsync(data.Parent.Id, ct);
+            parent = await LoadEntityAsync(data.Parent.Id, ct);
         }
 
         var dbCategory = new Models.Category()
@@ -38,7 +38,7 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
             Parent = parent
         };
 
-        categoryRepo.Add(dbCategory);
+        EntityRepository.Add(dbCategory);
 
         await unitOfWork.SaveChangesAsync(ct);
 
@@ -47,20 +47,20 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
 
     public async Task<Category?> FindById(Guid id, CancellationToken ct = default)
     {
-        var dbCategory = await LoadCategoryAsync(id, ct);
+        var dbCategory = await LoadEntity(id, ct);
 
         return mapper.Map<Category>(dbCategory);
     }
 
     public async Task<Category?> Update(Guid id, UpdateCategory data, CancellationToken ct = default)
     {
-        var dbCategory = await LoadCategoryAsync(id, ct);
+        var dbCategory = await LoadEntityAsync(id, ct);
 
         if (!string.IsNullOrEmpty(data.Name)) dbCategory.Name = data.Name;
 
         if (data.Parent != null)
         {
-            var parent = await LoadCategoryAsync(data.Parent.Id, ct);
+            var parent = await LoadEntityAsync(data.Parent.Id, ct);
             dbCategory.Parent = parent;
         }
 
@@ -71,18 +71,11 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IMapper 
 
     public async Task<bool> Delete(Guid id, CancellationToken ct = default)
     {
-        var dbCategory = await LoadCategoryAsync(id, ct);
+        var dbCategory = await LoadEntityAsync(id, ct);
 
-        categoryRepo.Remove(dbCategory);
+        EntityRepository.Remove(dbCategory);
 
         await unitOfWork.SaveChangesAsync(ct);
         return true;
-    }
-
-    private async Task<Models.Category> LoadCategoryAsync(Guid id, CancellationToken ct = default)
-    {
-        var dbCategory = await categoryRepo.GetByIdAsync(id, ct, false) ?? throw new NotFoundException(id, typeof(Category));
-
-        return dbCategory;
     }
 }

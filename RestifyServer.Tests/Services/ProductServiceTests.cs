@@ -154,7 +154,7 @@ public class ProductServiceTests
         var dbProduct = new Models.Product { Id = id, Name = "Found" };
         var mapped = new Product { Id = id, Name = "Found", Description = "", Price = 0, Category = new NestedCategory { Id = Guid.NewGuid(), Name = "C" } };
 
-        _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), true))
             .ReturnsAsync(dbProduct);
         _mapper.Setup(m => m.Map<Product>(dbProduct)).Returns(mapped);
 

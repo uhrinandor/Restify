@@ -102,7 +102,7 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, false))
+        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, true))
                   .ReturnsAsync(dbAdmin);
 
         // Act
@@ -113,7 +113,7 @@ public class AdminServiceTests
         result.Should().BeSameAs(mapped);
 
         _mapper.Verify(m => m.Map<Admin>(It.Is<object>(o => ReferenceEquals(o, dbAdmin))), Times.Once);
-        _adminRepository.Verify(r => r.GetByIdAsync(id, ct, false), Times.Once);
+        _adminRepository.Verify(r => r.GetByIdAsync(id, ct, true), Times.Once);
     }
 
     [Fact]

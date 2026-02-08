@@ -26,8 +26,6 @@ public class TableServiceTests
         _sut = new TableService(_tableRepoMock.Object, _mapperMock.Object, _uowMock.Object);
     }
 
-    #region List Tests
-
     [Fact]
     public async Task List_WithNoFilters_ShouldCallRepoWithTruePredicate()
     {
@@ -45,10 +43,6 @@ public class TableServiceTests
         _tableRepoMock.Verify(r => r.ListAsync(It.IsAny<Expression<Func<Models.Table, bool>>>(), ct), Times.Once);
     }
 
-    #endregion
-
-    #region FindById Tests
-
     [Fact]
     public async Task FindById_WhenExists_ShouldReturnMappedTable()
     {
@@ -58,7 +52,7 @@ public class TableServiceTests
         var dbTable = new Models.Table { Id = id, Number = 1 };
         var dtoTable = new Table { Id = id, Number = 1 };
 
-        _tableRepoMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _tableRepoMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), true))
             .ReturnsAsync(dbTable);
         _mapperMock.Setup(m => m.Map<Table>(dbTable)).Returns(dtoTable);
 
@@ -86,10 +80,6 @@ public class TableServiceTests
         await act.Should().ThrowAsync<NotFoundException>();
     }
 
-    #endregion
-
-    #region Create Tests
-
     [Fact]
     public async Task Create_ShouldAssignNumberAndCommit()
     {
@@ -105,10 +95,6 @@ public class TableServiceTests
         _tableRepoMock.Verify(r => r.Add(It.Is<Models.Table>(t => t.Number == 5)), Times.Once);
         _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
-
-    #endregion
-
-    #region Update Tests
 
     [Fact]
     public async Task Update_WhenNumberIsNull_ShouldNotChangeExistingNumber()
@@ -144,10 +130,6 @@ public class TableServiceTests
         await act.Should().ThrowAsync<NotFoundException>();
     }
 
-    #endregion
-
-    #region Delete Tests
-
     [Fact]
     public async Task Delete_WhenExists_ShouldRemoveAndSave()
     {
@@ -181,5 +163,4 @@ public class TableServiceTests
         await act.Should().ThrowAsync<NotFoundException>();
     }
 
-    #endregion
 }

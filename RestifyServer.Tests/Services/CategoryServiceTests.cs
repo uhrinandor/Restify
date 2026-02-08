@@ -31,7 +31,7 @@ public class CategoryServiceTests
         var dbCategory = new Models.Category { Id = id, Name = "Computers" };
         var expectedDto = new Category { Id = id, Name = "Computers" };
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(id, ct, false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(id, ct, true))
             .ReturnsAsync(dbCategory);
 
         _mapper.Setup(m => m.Map<Category>(dbCategory))
@@ -44,7 +44,7 @@ public class CategoryServiceTests
         result.Should().NotBeNull();
         result.Id.Should().Be(id);
         result.Name.Should().Be("Computers");
-        _categoryRepository.Verify(r => r.GetByIdAsync(id, ct, false), Times.Once);
+        _categoryRepository.Verify(r => r.GetByIdAsync(id, ct, true), Times.Once);
     }
 
     [Fact]

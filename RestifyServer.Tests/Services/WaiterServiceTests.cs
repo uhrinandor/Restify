@@ -71,7 +71,7 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Id = id, Username = "waiter1" };
         var mapped = new Waiter { Username = "waiter1" };
 
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, true))
                   .ReturnsAsync(dbWaiter);
 
         _mapper.Setup(m => m.Map<Waiter>(dbWaiter)).Returns(mapped);
@@ -81,7 +81,7 @@ public class WaiterServiceTests
 
         // Assert
         result.Should().BeSameAs(mapped);
-        _waiterRepository.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false), Times.Once);
+        _waiterRepository.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, true), Times.Once);
     }
 
     [Fact]
