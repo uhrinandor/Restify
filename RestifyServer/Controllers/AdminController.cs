@@ -6,7 +6,7 @@ using RestifyServer.TypeContracts;
 namespace RestifyServer.Controllers;
 
 
-public class AdminsController(IAdminService adminService)
+public class AdminController(IAdminService adminService)
     : CrudController<Admin, CreateAdmin, UpdateAdmin, FindAdmin>(adminService)
 {
     [HttpPut("{id}/password", Name = "UpdateAdminPassword")]

@@ -1,23 +1,23 @@
 import {inject, Injectable} from '@angular/core';
 import {
-    getListAdminsQueryKey,
-    injectCreateAdmins, injectDeleteAdmins,
-    injectListAdmins, injectUpdateAdmins, injectUpdateAdminPassword
-} from '../../api/generated/admins/admins';
+    getListAdminQueryKey,
+    injectCreateAdmin, injectDeleteAdmin,
+    injectListAdmin, injectUpdateAdmin, injectUpdateAdminPassword
+} from '../../api/generated/admin/admin';
 import {QueryClient} from '@tanstack/angular-query-experimental';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-    adminsQuery = injectListAdmins();
-    createAdmin = injectCreateAdmins();
-    updateAdmin = injectUpdateAdmins();
+    adminsQuery = injectListAdmin();
+    createAdmin = injectCreateAdmin();
+    updateAdmin = injectUpdateAdmin();
     updateAdminPassword = injectUpdateAdminPassword();
-    deleteAdmin = injectDeleteAdmins();
+    deleteAdmin = injectDeleteAdmin();
     queryClient = inject(QueryClient);
     public invalidateListQuery = () => this.queryClient.invalidateQueries({
-        queryKey: getListAdminsQueryKey(),
+        queryKey: getListAdminQueryKey(),
     })
 
 

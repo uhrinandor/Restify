@@ -3,7 +3,7 @@ import {AdminService} from './admin.service';
 import {DatePipe} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AdminForm} from './admin-form/admin-form';
-import {getListAdminsQueryKey} from '../../api/generated/admins/admins';
+import {getListAdminQueryKey} from '../../api/generated/admin/admin';
 import {QueryClient} from '@tanstack/angular-query-experimental';
 import {PasswordForm} from './password-form/password-form';
 import {ToastrService} from 'ngx-toastr';
