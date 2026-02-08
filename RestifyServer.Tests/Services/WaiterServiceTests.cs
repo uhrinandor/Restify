@@ -71,7 +71,7 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Id = id, Username = "waiter1" };
         var mapped = new Waiter { Username = "waiter1" };
 
-        _waiterRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), ct, false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
                   .ReturnsAsync(dbWaiter);
 
         _mapper.Setup(m => m.Map<Waiter>(dbWaiter)).Returns(mapped);
@@ -81,7 +81,7 @@ public class WaiterServiceTests
 
         // Assert
         result.Should().BeSameAs(mapped);
-        _waiterRepository.Verify(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), ct, false), Times.Once);
+        _waiterRepository.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false), Times.Once);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class WaiterServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        _waiterRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
                   .ReturnsAsync((Models.Waiter?)null);
 
         // Act
@@ -109,7 +109,7 @@ public class WaiterServiceTests
         var update = new UpdateWaiter(Username: "new", Name: "New Name");
         var mapped = new Waiter { Username = "new", Name = "New Name" };
 
-        _waiterRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
                   .ReturnsAsync(dbWaiter);
         _mapper.Setup(m => m.Map<Waiter>(dbWaiter)).Returns(mapped);
 
@@ -130,7 +130,7 @@ public class WaiterServiceTests
         var ct = new CancellationTokenSource().Token;
         var id = Guid.NewGuid();
         var dbWaiter = new Models.Waiter { Id = id };
-        _waiterRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
                   .ReturnsAsync(dbWaiter);
 
         // Act
@@ -151,7 +151,7 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Id = id, Password = "OLD_HASH" };
         var dto = new UpdatePassword("old_plain", "new_plain");
 
-        _waiterRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
                   .ReturnsAsync(dbWaiter);
 
         _passwordHasher.Setup(h => h.VerifyHashedPassword(dbWaiter, "OLD_HASH", "old_plain"))
@@ -175,7 +175,7 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Password = "OLD_HASH" };
         var dto = new UpdatePassword("wrong", "new");
 
-        _waiterRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Waiter, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
                   .ReturnsAsync(dbWaiter);
         _passwordHasher.Setup(h => h.VerifyHashedPassword(dbWaiter, "OLD_HASH", "wrong"))
                        .Returns(PasswordVerificationResult.Failed);

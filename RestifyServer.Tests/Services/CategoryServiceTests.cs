@@ -50,7 +50,7 @@ public class CategoryServiceTests
         var parentEntity = new Models.Category { Id = parentId, Name = "Root" };
         var input = new CreateCategory("Child", new Category { Id = parentEntity.Id });
 
-        _categoryRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Category, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(parentEntity);
 
         // Act
@@ -70,7 +70,7 @@ public class CategoryServiceTests
         var dbCategory = new Models.Category { Id = id, Name = "Old", Parent = existingParent };
         var update = new UpdateCategory("New", null);
 
-        _categoryRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Category, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(dbCategory);
 
         // Act
@@ -93,10 +93,10 @@ public class CategoryServiceTests
 
         var update = new UpdateCategory(null, new Category { Id = newParentId });
 
-        _categoryRepository.Setup(r => r.FirstOrDefaultAsync(It.Is<Expression<Func<Models.Category, bool>>>(e => e.Compile()(dbCategory)), It.IsAny<CancellationToken>(), false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), It.IsAny<bool>()))
             .ReturnsAsync(dbCategory);
 
-        _categoryRepository.Setup(r => r.FirstOrDefaultAsync(It.Is<Expression<Func<Models.Category, bool>>>(e => e.Compile()(newParent)), It.IsAny<CancellationToken>(), false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(newParentId, It.IsAny<CancellationToken>(), It.IsAny<bool>()))
             .ReturnsAsync(newParent);
 
         // Act
@@ -141,7 +141,7 @@ public class CategoryServiceTests
         // Arrange
         var ct = new CancellationTokenSource().Token;
         var id = Guid.NewGuid();
-        _categoryRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Category, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
             .ReturnsAsync((Models.Category?)null);
 
         // Act
@@ -158,7 +158,7 @@ public class CategoryServiceTests
         var id = Guid.NewGuid();
         var ct = new CancellationTokenSource().Token;
         var entity = new Models.Category { Id = id };
-        _categoryRepository.Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Category, bool>>>(), It.IsAny<CancellationToken>(), false))
+        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(entity);
 
         // Act

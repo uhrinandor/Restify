@@ -102,7 +102,7 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.FirstOrDefaultAsync(a => a.Id == id, ct, false))
+        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, false))
                   .ReturnsAsync(dbAdmin);
 
         // Act
@@ -113,7 +113,7 @@ public class AdminServiceTests
         result.Should().BeSameAs(mapped);
 
         _mapper.Verify(m => m.Map<Admin>(It.Is<object>(o => ReferenceEquals(o, dbAdmin))), Times.Once);
-        _adminRepository.Verify(r => r.FirstOrDefaultAsync(a => a.Id == id, ct, false), Times.Once);
+        _adminRepository.Verify(r => r.GetByIdAsync(id, ct, false), Times.Once);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class AdminServiceTests
         var ct = CancellationToken.None;
         var id = Guid.NewGuid();
 
-        _adminRepository.Setup(r => r.FirstOrDefaultAsync(a => a.Id == id, ct))
+        _adminRepository.Setup(r => r.GetByIdAsync(id, ct))
                   .ReturnsAsync((Models.Admin?)null);
 
         // Act
@@ -159,7 +159,7 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.FirstOrDefaultAsync(a => a.Id == id, ct, false))
+        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, false))
                   .ReturnsAsync(dbAdmin);
 
         // Act
@@ -201,7 +201,7 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.FirstOrDefaultAsync(a => a.Id == id, ct, false))
+        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, false))
                   .ReturnsAsync(dbAdmin);
 
         // Act
@@ -224,7 +224,7 @@ public class AdminServiceTests
         var ct = CancellationToken.None;
         var id = Guid.NewGuid();
 
-        _adminRepository.Setup(r => r.FirstOrDefaultAsync(a => a.Id == id, ct))
+        _adminRepository.Setup(r => r.GetByIdAsync(id, ct))
                   .ReturnsAsync((Models.Admin?)null);
 
         var update = new UpdateAdmin
@@ -253,7 +253,7 @@ public class AdminServiceTests
         var dbAdmin = new Models.Admin { Id = id, Username = "endor" };
 
         _adminRepository
-            .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Admin, bool>>>(), ct, false))
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
             .ReturnsAsync(dbAdmin);
 
         // Act
@@ -274,7 +274,7 @@ public class AdminServiceTests
         var id = Guid.NewGuid();
 
         _adminRepository
-            .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Admin, bool>>>(), ct))
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct))
             .ReturnsAsync((Models.Admin?)null);
 
         // Act
@@ -303,7 +303,7 @@ public class AdminServiceTests
         );
 
         _adminRepository
-            .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Admin, bool>>>(), ct, false))
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
             .ReturnsAsync(dbAdmin);
 
         _passwordHasher
@@ -340,7 +340,7 @@ public class AdminServiceTests
         );
 
         _adminRepository
-            .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Admin, bool>>>(), ct, false))
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
             .ReturnsAsync(dbAdmin);
 
         _passwordHasher
@@ -365,7 +365,7 @@ public class AdminServiceTests
         var id = Guid.NewGuid();
 
         _adminRepository
-            .Setup(r => r.FirstOrDefaultAsync(It.IsAny<Expression<Func<Models.Admin, bool>>>(), ct))
+            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct))
             .ReturnsAsync((Models.Admin?)null);
 
         var dto = new UpdatePassword
