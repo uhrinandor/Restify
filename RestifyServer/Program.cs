@@ -4,6 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using RestifyServer.Configuration;
+using RestifyServer.Data;
 using RestifyServer.Repository;
 using RestifyServer.Utils;
 using Serilog;

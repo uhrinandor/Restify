@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RestifyServer.Models;
 
-namespace RestifyServer.Repository;
+namespace RestifyServer.Data;
 
 public class RestifyContext : DbContext
 {
@@ -17,7 +17,8 @@ public class RestifyContext : DbContext
     {
         var now = DateTime.UtcNow;
 
-        foreach (var entry in ChangeTracker.Entries<Entity>())
+        var entries = ChangeTracker.Entries<Entity>();
+        foreach (var entry in entries)
         {
             if (entry.State == EntityState.Added)
             {

@@ -35,10 +35,10 @@ public abstract class CrudController<TContract, TCreate, TUpdate, TFind>(ICrudSe
     }
 
     [HttpPut("{id}", Name = "Update[controller]")]
-    [ProducesResponseType(typeof(Admin), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<Admin>> Update([FromRoute] Guid id, [FromBody] TUpdate patch, CancellationToken ct)
+    public async Task<ActionResult<TContract>> Update([FromRoute] Guid id, [FromBody] TUpdate patch, CancellationToken ct)
     {
         var updated = await crudService.Update(id, patch, ct);
         return Ok(updated);

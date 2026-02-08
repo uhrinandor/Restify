@@ -1,21 +1,17 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using RestifyServer.Data;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Models;
 using RestifyServer.Repository;
 
 namespace RestifyServer.Repositories;
 
-public abstract class Repository<T> : IRepository<T> where T : Entity, new()
+public abstract class Repository<T>(RestifyContext db) : IRepository<T>
+    where T : Entity, new()
 {
-    private readonly RestifyContext _db;
-    protected readonly DbSet<T> _set;
-
-    public Repository(RestifyContext db)
-    {
-        _db = db;
-        _set = db.Set<T>();
-    }
+    private readonly RestifyContext _db = db;
+    protected readonly DbSet<T> _set = db.Set<T>();
 
     protected virtual IQueryable<T> ListQueryable(bool asNoTracking = true) => asNoTracking ? _set.AsNoTracking() : _set;
     protected virtual IQueryable<T> SingleQueryable(bool asNoTracking = true) => asNoTracking ? _set.AsNoTracking() : _set;

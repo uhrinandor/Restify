@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RestifyServer.Data;
 using RestifyServer.Models;
 using RestifyServer.Repository;
 

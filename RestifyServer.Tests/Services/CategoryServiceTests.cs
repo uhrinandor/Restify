@@ -23,6 +23,52 @@ public class CategoryServiceTests
     }
 
     [Fact]
+    public async Task FindById_TargetExists_ReturnsMappedCategory()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var ct = CancellationToken.None;
+        var dbCategory = new Models.Category { Id = id, Name = "Computers" };
+        var expectedDto = new Category { Id = id, Name = "Computers" };
+
+        _categoryRepository.Setup(r => r.GetByIdAsync(id, ct, false))
+            .ReturnsAsync(dbCategory);
+
+        _mapper.Setup(m => m.Map<Category>(dbCategory))
+            .Returns(expectedDto);
+
+        // Act
+        var result = await _sut.FindById(id, ct);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(id);
+        result.Name.Should().Be("Computers");
+        _categoryRepository.Verify(r => r.GetByIdAsync(id, ct, false), Times.Once);
+    }
+
+    [Fact]
+    public async Task FindById_TargetDoesNotExist_ThrowsNotFoundException()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var ct = CancellationToken.None;
+
+        _categoryRepository.Setup(r => r.GetByIdAsync(id, ct, false))
+            .ReturnsAsync((Models.Category?)null);
+
+        // Act
+        var act = () => _sut.FindById(id, ct);
+
+        // Assert
+        await act.Should().ThrowAsync<NotFoundException>()
+            .Where(e => e.Message.Contains(id.ToString()));
+
+        // Ensure mapping was never attempted since load failed
+        _mapper.Verify(m => m.Map<Category>(It.IsAny<Models.Category>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Create_ValidData_ReturnsMappedResult()
     {
         // Arrange
