@@ -1,34 +1,44 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AdminComponent } from './admin.component';
-import {DatePipe} from '@angular/common';
-import {ReactiveFormsModule} from '@angular/forms';
-import {AdminForm} from './admin-form/admin-form';
-import {PasswordForm} from './password-form/password-form';
-import {AdminService} from './admin.service';
-import {QueryClient} from '@tanstack/angular-query-experimental';
-import {ToastrModule} from 'ngx-toastr';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
+import { ToastrModule } from 'ngx-toastr';
+import { AdminService } from './admin.service';
 
-describe('Admin', () => {
-  let component: AdminComponent;
-  let fixture: ComponentFixture<AdminComponent>;
+describe('AdminComponent', () => {
+    let component: AdminComponent;
+    let fixture: ComponentFixture<AdminComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AdminComponent,         DatePipe,
-          ReactiveFormsModule,
-          AdminForm,
-          PasswordForm, ToastrModule.forRoot()],
-        providers: [QueryClient, AdminService],
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            // AdminComponent is standalone, so include it in imports
+            imports: [
+                AdminComponent,
+                ToastrModule.forRoot()
+            ],
+            providers: [
+                AdminService,
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                provideQueryClient(new QueryClient({
+                    defaultOptions: {
+                        queries: {
+                            retry: false,
+                            gcTime: 0,
+                        },
+                    },
+                })),
+            ],
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(AdminComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
-  });
+        fixture = TestBed.createComponent(AdminComponent);
+        component = fixture.componentInstance;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });
