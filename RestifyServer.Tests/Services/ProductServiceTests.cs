@@ -36,10 +36,10 @@ public class ProductServiceTests
         var categoryId = Guid.NewGuid();
 
         // Using Primary Constructor for record
-        var input = new CreateProduct("Burger",  "Juicy burger",10.50m, new Category { Id = categoryId });
+        var input = new CreateProduct("Burger", "Juicy burger", 10.50m, new Category { Id = categoryId });
 
         var dbCategory = new Models.Category { Id = categoryId, Name = "Food" };
-        var mappedResult = new Product { Id = Guid.NewGuid(), Name = "Burger",  Description = "Juicy burger", Price = 10.50m, Category = new NestedCategory{ Id = categoryId,Name = "Food"} };
+        var mappedResult = new Product { Id = Guid.NewGuid(), Name = "Burger", Description = "Juicy burger", Price = 10.50m, Category = new NestedCategory { Id = categoryId, Name = "Food" } };
 
         _categoryRepository.Setup(r => r.GetByIdAsync(categoryId, ct, false))
             .ReturnsAsync(dbCategory);
@@ -62,7 +62,7 @@ public class ProductServiceTests
     public async Task Create_CategoryNotFound_ThrowsNotFoundException()
     {
         // Arrange
-        var input = new CreateProduct("Pizza", "Test",12m, new Category { Id = Guid.NewGuid() });
+        var input = new CreateProduct("Pizza", "Test", 12m, new Category { Id = Guid.NewGuid() });
 
         _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
             .ReturnsAsync((Models.Category?)null);
@@ -130,7 +130,7 @@ public class ProductServiceTests
         var ct = new CancellationTokenSource().Token;
         var query = new FindProduct(Name: "Filtered", null, null, null);
         var dbList = new List<Models.Product> { new() { Name = "Filtered" } };
-        var mappedList = new List<Product> { new Product{ Id = Guid.NewGuid(), Name = "Filtered", Description  = "", Price = 0, Category  = new NestedCategory{ Id = Guid.NewGuid(), Name = "C"} } };
+        var mappedList = new List<Product> { new Product { Id = Guid.NewGuid(), Name = "Filtered", Description = "", Price = 0, Category = new NestedCategory { Id = Guid.NewGuid(), Name = "C" } } };
 
         _productRepository.Setup(r => r.ListAsync(It.IsAny<Expression<Func<Models.Product, bool>>>(), It.IsAny<CancellationToken>(), true))
             .ReturnsAsync(dbList);
@@ -152,7 +152,7 @@ public class ProductServiceTests
         var ct = new CancellationTokenSource().Token;
         var id = Guid.NewGuid();
         var dbProduct = new Models.Product { Id = id, Name = "Found" };
-        var mapped = new Product{ Id = id, Name = "Found", Description = "",Price = 0, Category = new NestedCategory{Id = Guid.NewGuid(), Name = "C"} };
+        var mapped = new Product { Id = id, Name = "Found", Description = "", Price = 0, Category = new NestedCategory { Id = Guid.NewGuid(), Name = "C" } };
 
         _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(dbProduct);

@@ -13,9 +13,9 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
     public async Task<List<Product>> List(FindProduct query, CancellationToken ct = default)
     {
         var p = Predicate.True<Models.Product>();
-        if(!string.IsNullOrEmpty(query.Name)) p = p.And(x => x.Name == query.Name);
-        if(!string.IsNullOrEmpty(query.Description)) p = p.And(x => x.Description.Contains(query.Description));
-        if(query.Price != null) p = p.And(x => x.Price == query.Price);
+        if (!string.IsNullOrEmpty(query.Name)) p = p.And(x => x.Name == query.Name);
+        if (!string.IsNullOrEmpty(query.Description)) p = p.And(x => x.Description.Contains(query.Description));
+        if (query.Price != null) p = p.And(x => x.Price == query.Price);
         if (query.Category != null) p = p.And(x => x.Category.Id == query.Category.Id);
         var list = await productRepo.ListAsync(p, ct);
 
@@ -25,7 +25,7 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
     public async Task<Product> Create(CreateProduct data, CancellationToken ct = default)
     {
         var dbCategory = await categoryRepo.GetByIdAsync(data.Category.Id, ct, false);
-        if(dbCategory == null) throw new NotFoundException(data.Category.Id, typeof(Category));
+        if (dbCategory == null) throw new NotFoundException(data.Category.Id, typeof(Category));
 
         var dbProduct = new Models.Product()
         {
@@ -52,13 +52,13 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
     {
         var dbProduct = await LoadProductAsync(id, ct);
 
-        if(!string.IsNullOrEmpty(data.Name)) dbProduct.Name = data.Name;
-        if(!string.IsNullOrEmpty(data.Description)) dbProduct.Description = data.Description;
+        if (!string.IsNullOrEmpty(data.Name)) dbProduct.Name = data.Name;
+        if (!string.IsNullOrEmpty(data.Description)) dbProduct.Description = data.Description;
         if (data.Price != null) dbProduct.Price = data.Price ?? dbProduct.Price;
         if (data.Category != null)
         {
             var dbCategory = await categoryRepo.GetByIdAsync(data.Category.Id, ct, false);
-            if(dbCategory == null) throw new NotFoundException(data.Category.Id, typeof(Category));
+            if (dbCategory == null) throw new NotFoundException(data.Category.Id, typeof(Category));
             dbProduct.Category = dbCategory;
         }
 
