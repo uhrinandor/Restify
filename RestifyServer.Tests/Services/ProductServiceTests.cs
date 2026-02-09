@@ -13,18 +13,18 @@ namespace RestifyServer.Tests.Services;
 
 public class ProductServiceTests
 {
-    private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
     private readonly Mock<IRepository<Models.Product>> _productRepository = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly Mock<IEntityService<Models.Product>> _entityService = new();
+    private readonly Mock<IEntityService<Models.Category>> _categoryEntityService = new();
     private readonly ProductService _sut;
 
     public ProductServiceTests()
     {
         _sut = new ProductService(
-            _categoryRepository.Object,
             _productRepository.Object,
             _entityService.Object,
+            _categoryEntityService.Object,
             _mapper.Object);
     }
 
@@ -36,13 +36,12 @@ public class ProductServiceTests
         var ct = CancellationToken.None;
         var categoryId = Guid.NewGuid();
 
-        // Using Primary Constructor for record
         var input = new CreateProduct("Burger", "Juicy burger", 10.50m, new Category { Id = categoryId });
 
         var dbCategory = new Models.Category { Id = categoryId, Name = "Food" };
         var mappedResult = new Product { Id = Guid.NewGuid(), Name = "Burger", Description = "Juicy burger", Price = 10.50m, Category = new NestedCategory { Id = categoryId, Name = "Food" } };
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(categoryId, ct, false))
+        _categoryEntityService.Setup(r => r.LoadEntityAsync(categoryId, ct))
             .ReturnsAsync(dbCategory);
 
         _mapper.Setup(m => m.Map<Product>(It.IsAny<Models.Product>()))
@@ -56,22 +55,6 @@ public class ProductServiceTests
         result.Name.Should().Be("Burger");
 
         _productRepository.Verify(r => r.Add(It.Is<Models.Product>(p => p.Category == dbCategory)), Times.Once);
-    }
-
-    [Fact]
-    public async Task Create_CategoryNotFound_ThrowsNotFoundException()
-    {
-        // Arrange
-        var input = new CreateProduct("Pizza", "Test", 12m, new Category { Id = Guid.NewGuid() });
-
-        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-            .ReturnsAsync((Models.Category?)null);
-
-        // Act
-        Func<Task> act = async () => await _sut.Create(input);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
     }
 
     [Fact]
@@ -89,7 +72,7 @@ public class ProductServiceTests
 
         _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbProduct);
-        _categoryRepository.Setup(r => r.GetByIdAsync(newCatId, It.IsAny<CancellationToken>(), false))
+        _categoryEntityService.Setup(r => r.LoadEntityAsync(newCatId, ct))
             .ReturnsAsync(newCat);
 
         // Act

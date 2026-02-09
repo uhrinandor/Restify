@@ -1,6 +1,5 @@
 using AutoMapper;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
@@ -56,11 +55,7 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IEntityS
 
         if (!string.IsNullOrEmpty(data.Name)) dbCategory.Name = data.Name;
 
-        if (data.Parent != null)
-        {
-            var parent = await entityService.LoadEntityAsync(data.Parent.Id, ct);
-            dbCategory.Parent = parent;
-        }
+        if (data.Parent != null) dbCategory.Parent = await entityService.LoadEntityAsync(data.Parent.Id, ct);
 
         return mapper.Map<Category>(dbCategory);
     }

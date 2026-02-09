@@ -1,6 +1,5 @@
 using AutoMapper;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
@@ -8,7 +7,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class ProductService(IRepository<Models.Category> categoryRepo, IRepository<Models.Product> productRepo, IEntityService<Models.Product> entityService, IMapper mapper) : IProductService
+public class ProductService(IRepository<Models.Product> productRepo, IEntityService<Models.Product> entityService, IEntityService<Models.Category> categoryEntityService, IMapper mapper) : IProductService
 {
     public async Task<List<Product>> List(FindProduct query, CancellationToken ct = default)
     {
@@ -24,8 +23,7 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
 
     public async Task<Product> Create(CreateProduct data, CancellationToken ct = default)
     {
-        var dbCategory = await categoryRepo.GetByIdAsync(data.Category.Id, ct, false);
-        if (dbCategory == null) throw new NotFoundException(data.Category.Id, typeof(Category));
+        var dbCategory = await categoryEntityService.LoadEntityAsync(data.Category.Id, ct);
 
         var dbProduct = new Models.Product()
         {
@@ -54,12 +52,7 @@ public class ProductService(IRepository<Models.Category> categoryRepo, IReposito
         if (!string.IsNullOrEmpty(data.Name)) dbProduct.Name = data.Name;
         if (!string.IsNullOrEmpty(data.Description)) dbProduct.Description = data.Description;
         if (data.Price != null) dbProduct.Price = data.Price ?? dbProduct.Price;
-        if (data.Category != null)
-        {
-            var dbCategory = await categoryRepo.GetByIdAsync(data.Category.Id, ct, false);
-            if (dbCategory == null) throw new NotFoundException(data.Category.Id, typeof(Category));
-            dbProduct.Category = dbCategory;
-        }
+        if (data.Category != null) dbProduct.Category = await categoryEntityService.LoadEntityAsync(data.Category.Id, ct);
 
         return mapper.Map<Product>(dbProduct);
     }
