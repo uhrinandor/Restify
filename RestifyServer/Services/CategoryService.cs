@@ -42,14 +42,14 @@ public class CategoryService(IRepository<Models.Category> categoryRepo, IEntityS
         return mapper.Map<Category>(dbCategory);
     }
 
-    public async Task<Category?> FindById(Guid id, CancellationToken ct = default)
+    public async Task<Category> FindById(Guid id, CancellationToken ct = default)
     {
         var dbCategory = await entityService.LoadEntity(id, ct);
 
         return mapper.Map<Category>(dbCategory);
     }
 
-    public async Task<Category?> Update(Guid id, UpdateCategory data, CancellationToken ct = default)
+    public async Task<Category> Update(Guid id, UpdateCategory data, CancellationToken ct = default)
     {
         var dbCategory = await entityService.LoadEntityAsync(id, ct);
 

@@ -32,13 +32,13 @@ public class TableService(IRepository<Models.Table> tableRepo, IEntityService<Mo
         return Task.FromResult(mapped);
     }
 
-    public async Task<Table?> FindById(Guid id, CancellationToken ct = default)
+    public async Task<Table> FindById(Guid id, CancellationToken ct = default)
     {
         var dbTable = await entityService.LoadEntity(id, ct);
         return mapper.Map<Table>(dbTable);
     }
 
-    public async Task<Table?> Update(Guid id, UpdateTable data, CancellationToken ct = default)
+    public async Task<Table> Update(Guid id, UpdateTable data, CancellationToken ct = default)
     {
         var dbTable = await entityService.LoadEntityAsync(id, ct);
         if (data.Number != null) dbTable.Number = data.Number ?? dbTable.Number;

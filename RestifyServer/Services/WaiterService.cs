@@ -15,7 +15,7 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IEntityService
         var p = Predicate.True<Models.Waiter>();
         if (!string.IsNullOrEmpty(query.Username)) p = p.And(a => a.Username == query.Username);
         if (!string.IsNullOrEmpty(query.Name)) p = p.And(a => a.Name == query.Name);
-        if (query.id != null) p = p.And(a => a.Id == query.id);
+        if (query.Id != null) p = p.And(a => a.Id == query.Id);
         var list = await waiterRepo.ListAsync(p, ct);
 
         return mapper.Map<List<Waiter>>(list);
@@ -35,14 +35,14 @@ public class WaiterService(IRepository<Models.Waiter> waiterRepo, IEntityService
         return Task.FromResult(mapped);
     }
 
-    public async Task<Waiter?> FindById(Guid id, CancellationToken ct = default)
+    public async Task<Waiter> FindById(Guid id, CancellationToken ct = default)
     {
         var dbWaiter = await entityService.LoadEntity(id, ct);
 
         return mapper.Map<Waiter>(dbWaiter);
     }
 
-    public async Task<Waiter?> Update(Guid id, UpdateWaiter data, CancellationToken ct = default)
+    public async Task<Waiter> Update(Guid id, UpdateWaiter data, CancellationToken ct = default)
     {
         var dbWaiter = await entityService.LoadEntityAsync(id, ct);
 

@@ -1,3 +1,3 @@
 namespace RestifyServer.Dto;
 
-public record FindWaiter(Guid? id, string? Username, string? Name);
+public record FindWaiter(Guid? Id, string? Username, string? Name);

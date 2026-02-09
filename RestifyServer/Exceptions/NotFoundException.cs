@@ -2,7 +2,7 @@ namespace RestifyServer.Exceptions;
 
 public class NotFoundException : DomainException
 {
-    public NotFoundException(Guid id, Type entityType) : base($"{entityType.Name} was not found, id: {id}")
+    public NotFoundException(Guid id, Type entityType) : base($"{entityType.Name} was not found, Id: {id}")
     {
     }
 

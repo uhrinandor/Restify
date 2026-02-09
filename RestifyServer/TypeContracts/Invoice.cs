@@ -1,6 +1,6 @@
 using RestifyServer.Models.Enums;
 
-namespace RestifyServer.Models;
+namespace RestifyServer.TypeContracts;
 
 public class Invoice : Entity
 {

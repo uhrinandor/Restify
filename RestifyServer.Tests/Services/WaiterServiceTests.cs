@@ -174,7 +174,7 @@ public class WaiterServiceTests
     {
         // Arrange
         var ct = new CancellationTokenSource().Token;
-        var query = new FindWaiter(Username: "john", Name: "John", id: null);
+        var query = new FindWaiter(Username: "john", Name: "John", Id: null);
         var dbList = new List<Models.Waiter> { new Models.Waiter { Username = "john" } };
         var mappedList = new List<Waiter> { new Waiter { Username = "john" } };
 

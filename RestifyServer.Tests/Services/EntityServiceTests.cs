@@ -64,7 +64,7 @@ public class EntityServiceTests
         // Assert
         await act.Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"Admin was not found, id: {id}");
+            .WithMessage($"Admin was not found, Id: {id}");
 
         _repository.Verify(
             r => r.GetByIdAsync(id, ct, false),
@@ -117,7 +117,7 @@ public class EntityServiceTests
         // Assert
         await act.Should()
             .ThrowAsync<NotFoundException>()
-            .WithMessage($"Admin was not found, id: {id}");
+            .WithMessage($"Admin was not found, Id: {id}");
 
         _repository.Verify(
             r => r.GetByIdAsync(id, ct),

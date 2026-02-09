@@ -38,14 +38,14 @@ public class ProductService(IRepository<Models.Product> productRepo, IEntityServ
         return mapper.Map<Product>(dbProduct);
     }
 
-    public async Task<Product?> FindById(Guid id, CancellationToken ct = default)
+    public async Task<Product> FindById(Guid id, CancellationToken ct = default)
     {
         var dbProduct = await entityService.LoadEntity(id, ct);
 
         return mapper.Map<Product>(dbProduct);
     }
 
-    public async Task<Product?> Update(Guid id, UpdateProduct data, CancellationToken ct = default)
+    public async Task<Product> Update(Guid id, UpdateProduct data, CancellationToken ct = default)
     {
         var dbProduct = await entityService.LoadEntityAsync(id, ct);
 

@@ -35,13 +35,13 @@ public class AdminService(IRepository<Models.Admin> adminRepo, IEntityService<Mo
         return Task.FromResult(mapped);
     }
 
-    public async Task<Admin?> FindById(Guid id, CancellationToken ct = default)
+    public async Task<Admin> FindById(Guid id, CancellationToken ct = default)
     {
         var dbAdmin = await entityService.LoadEntity(id, ct);
         return mapper.Map<Admin>(dbAdmin);
     }
 
-    public async Task<Admin?> Update(Guid id, UpdateAdmin data, CancellationToken ct = default)
+    public async Task<Admin> Update(Guid id, UpdateAdmin data, CancellationToken ct = default)
     {
         var dbAdmin = await entityService.LoadEntityAsync(id, ct);
 
