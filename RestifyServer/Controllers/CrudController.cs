@@ -30,7 +30,6 @@ public abstract class CrudController<TContract, TCreate, TUpdate, TFind>(ICrudSe
     public async Task<ActionResult<TContract>> Get([FromRoute] Guid id, CancellationToken ct)
     {
         var entity = await crudService.FindById(id, ct);
-        if (entity == null) return NotFound();
         return Ok(entity);
     }
 
