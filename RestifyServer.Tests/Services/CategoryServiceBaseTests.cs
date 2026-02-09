@@ -11,16 +11,16 @@ using RestifyServer.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class CategoryServiceTests
+public class CategoryServiceBaseTests
 {
     private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
     private readonly Mock<IMapper> _mapper = new();
-    private readonly CategoryService _sut;
+    private readonly CategoryServiceBase _sut;
     private readonly Mock<IEntityService<Models.Category>> _entityService = new();
 
-    public CategoryServiceTests()
+    public CategoryServiceBaseTests()
     {
-        _sut = new CategoryService(_categoryRepository.Object, _entityService.Object, _mapper.Object);
+        _sut = new CategoryServiceBase(_categoryRepository.Object, _entityService.Object, _mapper.Object);
     }
 
     [Fact]

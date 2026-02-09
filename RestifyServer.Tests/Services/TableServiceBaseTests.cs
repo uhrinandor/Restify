@@ -2,7 +2,6 @@ using AutoMapper;
 using Moq;
 using FluentAssertions;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Services;
 using RestifyServer.TypeContracts;
@@ -11,19 +10,19 @@ using RestifyServer.Interfaces.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class TableServiceTests
+public class TableServiceBaseTests
 {
     private readonly Mock<IRepository<Models.Table>> _tableRepoMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IEntityService<Models.Table>> _entityService = new();
-    private readonly TableService _sut;
+    private readonly TableServiceBase _sut;
 
-    public TableServiceTests()
+    public TableServiceBaseTests()
     {
         _tableRepoMock = new Mock<IRepository<Models.Table>>();
         _mapperMock = new Mock<IMapper>();
 
-        _sut = new TableService(_tableRepoMock.Object, _entityService.Object, _mapperMock.Object);
+        _sut = new TableServiceBase(_tableRepoMock.Object, _entityService.Object, _mapperMock.Object);
     }
 
     [Fact]

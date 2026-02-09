@@ -4,7 +4,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
@@ -13,18 +12,18 @@ using RestifyServer.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class AdminServiceTests
+public class AdminServiceBaseTests
 {
     private readonly Mock<IRepository<Models.Admin>> _adminRepository = new();
     private readonly Mock<IPasswordHasher<Models.Admin>> _passwordHasher = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly Mock<IEntityService<Models.Admin>> _entityService = new();
 
-    private readonly AdminService _sut;
+    private readonly AdminServiceBase _sut;
 
-    public AdminServiceTests()
+    public AdminServiceBaseTests()
     {
-        _sut = new AdminService(_adminRepository.Object, _entityService.Object, _passwordHasher.Object, _mapper.Object);
+        _sut = new AdminServiceBase(_adminRepository.Object, _entityService.Object, _passwordHasher.Object, _mapper.Object);
     }
 
     [Fact]

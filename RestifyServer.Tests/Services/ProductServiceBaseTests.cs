@@ -11,17 +11,17 @@ using RestifyServer.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class ProductServiceTests
+public class ProductServiceBaseTests
 {
     private readonly Mock<IRepository<Models.Product>> _productRepository = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly Mock<IEntityService<Models.Product>> _entityService = new();
     private readonly Mock<IEntityService<Models.Category>> _categoryEntityService = new();
-    private readonly ProductService _sut;
+    private readonly ProductServiceBase _sut;
 
-    public ProductServiceTests()
+    public ProductServiceBaseTests()
     {
-        _sut = new ProductService(
+        _sut = new ProductServiceBase(
             _productRepository.Object,
             _entityService.Object,
             _categoryEntityService.Object,
