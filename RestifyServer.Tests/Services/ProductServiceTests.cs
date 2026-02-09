@@ -5,6 +5,7 @@ using Moq;
 using RestifyServer.Dto;
 using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
+using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
 using RestifyServer.Services;
 
@@ -15,6 +16,7 @@ public class ProductServiceTests
     private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
     private readonly Mock<IRepository<Models.Product>> _productRepository = new();
     private readonly Mock<IMapper> _mapper = new();
+    private readonly Mock<IEntityService<Models.Product>> _entityService = new();
     private readonly ProductService _sut;
 
     public ProductServiceTests()
@@ -22,6 +24,7 @@ public class ProductServiceTests
         _sut = new ProductService(
             _categoryRepository.Object,
             _productRepository.Object,
+            _entityService.Object,
             _mapper.Object);
     }
 
@@ -84,7 +87,7 @@ public class ProductServiceTests
         // Primary constructor for UpdateProduct record
         var update = new UpdateProduct("New Name", "New Desc", 99.99m, new Category { Id = newCatId });
 
-        _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbProduct);
         _categoryRepository.Setup(r => r.GetByIdAsync(newCatId, It.IsAny<CancellationToken>(), false))
             .ReturnsAsync(newCat);
@@ -108,7 +111,7 @@ public class ProductServiceTests
         var dbProduct = new Models.Product { Id = id, Name = "Old", Price = 10 };
         var update = new UpdateProduct(Name: "Just Name Change", null, null, null); // Price and Category are null
 
-        _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbProduct);
 
         // Act
@@ -150,7 +153,7 @@ public class ProductServiceTests
         var dbProduct = new Models.Product { Id = id, Name = "Found" };
         var mapped = new Product { Id = id, Name = "Found", Description = "", Price = 0, Category = new NestedCategory { Id = Guid.NewGuid(), Name = "C" } };
 
-        _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), true))
+        _entityService.Setup(r => r.LoadEntity(id, ct))
             .ReturnsAsync(dbProduct);
         _mapper.Setup(m => m.Map<Product>(dbProduct)).Returns(mapped);
 
@@ -170,7 +173,7 @@ public class ProductServiceTests
         var id = Guid.NewGuid();
         var dbProduct = new Models.Product { Id = id };
 
-        _productRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbProduct);
 
         // Act

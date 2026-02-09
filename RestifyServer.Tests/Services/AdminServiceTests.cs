@@ -6,6 +6,7 @@ using Moq;
 using RestifyServer.Dto;
 using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
+using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
 using RestifyServer.Models.Enums;
 using RestifyServer.Services;
@@ -17,12 +18,13 @@ public class AdminServiceTests
     private readonly Mock<IRepository<Models.Admin>> _adminRepository = new();
     private readonly Mock<IPasswordHasher<Models.Admin>> _passwordHasher = new();
     private readonly Mock<IMapper> _mapper = new();
+    private readonly Mock<IEntityService<Models.Admin>> _entityService = new();
 
     private readonly AdminService _sut;
 
     public AdminServiceTests()
     {
-        _sut = new AdminService(_adminRepository.Object, _passwordHasher.Object, _mapper.Object);
+        _sut = new AdminService(_adminRepository.Object, _entityService.Object, _passwordHasher.Object, _mapper.Object);
     }
 
     [Fact]
@@ -98,7 +100,7 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, true))
+        _entityService.Setup(r => r.LoadEntity(id, ct))
                   .ReturnsAsync(dbAdmin);
 
         // Act
@@ -109,25 +111,7 @@ public class AdminServiceTests
         result.Should().BeSameAs(mapped);
 
         _mapper.Verify(m => m.Map<Admin>(It.Is<object>(o => ReferenceEquals(o, dbAdmin))), Times.Once);
-        _adminRepository.Verify(r => r.GetByIdAsync(id, ct, true), Times.Once);
-    }
-
-    [Fact]
-    public async Task FindById_NotFound_ThrowsNotFoundException()
-    {
-        // Arrange
-        var ct = CancellationToken.None;
-        var id = Guid.NewGuid();
-
-        _adminRepository.Setup(r => r.GetByIdAsync(id, ct))
-                  .ReturnsAsync((Models.Admin?)null);
-
-        // Act
-        Func<Task> act = async () => _ = await _sut.FindById(id, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-        _mapper.Verify(m => m.Map<Admin>(It.IsAny<object>()), Times.Never);
+        _entityService.Verify(r => r.LoadEntity(id, ct), Times.Once);
     }
 
     [Fact]
@@ -155,8 +139,8 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, false))
-                  .ReturnsAsync(dbAdmin);
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
+            .ReturnsAsync(dbAdmin);
 
         // Act
         var result = await _sut.Update(id, update, ct);
@@ -196,8 +180,8 @@ public class AdminServiceTests
         _mapper.Setup(m => m.Map<Admin>(It.IsAny<object>()))
                .Returns(mapped);
 
-        _adminRepository.Setup(r => r.GetByIdAsync(id, ct, false))
-                  .ReturnsAsync(dbAdmin);
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
+            .ReturnsAsync(dbAdmin);
 
         // Act
         var result = await _sut.Update(id, update, ct);
@@ -212,31 +196,6 @@ public class AdminServiceTests
     }
 
     [Fact]
-    public async Task UpdateAdmin_NotFound_ThrowsNotFoundException()
-    {
-        // Arrange
-        var ct = CancellationToken.None;
-        var id = Guid.NewGuid();
-
-        _adminRepository.Setup(r => r.GetByIdAsync(id, ct))
-                  .ReturnsAsync((Models.Admin?)null);
-
-        var update = new UpdateAdmin
-        (
-            Username: "new",
-            WriteMode: true
-        );
-
-        // Act
-        Func<Task> act = async () => _ = await _sut.Update(id, update, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-
-        _mapper.Verify(m => m.Map<Admin>(It.IsAny<object>()), Times.Never);
-    }
-
-    [Fact]
     public async Task DeleteAdmin_Valid_SuccessfulSaving()
     {
         // Arrange
@@ -245,8 +204,7 @@ public class AdminServiceTests
 
         var dbAdmin = new Models.Admin { Id = id, Username = "endor" };
 
-        _adminRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbAdmin);
 
         // Act
@@ -256,26 +214,6 @@ public class AdminServiceTests
         result.Should().BeTrue();
 
         _adminRepository.Verify(r => r.Remove(It.Is<Models.Admin>(a => ReferenceEquals(a, dbAdmin))), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteAdmin_NotFound_ThrowsNotFoundException()
-    {
-        // Arrange
-        var ct = CancellationToken.None;
-        var id = Guid.NewGuid();
-
-        _adminRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct))
-            .ReturnsAsync((Models.Admin?)null);
-
-        // Act
-        Func<Task> act = async () => _ = await _sut.Delete(id, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-
-        _adminRepository.Verify(r => r.Remove(It.IsAny<Models.Admin>()), Times.Never);
     }
 
     [Fact]
@@ -293,8 +231,7 @@ public class AdminServiceTests
             NewPassword: "new"
         );
 
-        _adminRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbAdmin);
 
         _passwordHasher
@@ -329,8 +266,7 @@ public class AdminServiceTests
             NewPassword: "new"
         );
 
-        _adminRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbAdmin);
 
         _passwordHasher
@@ -344,31 +280,6 @@ public class AdminServiceTests
         await act.Should().ThrowAsync<UnauthorizedAccessException>();
 
         _passwordHasher.Verify(h => h.HashPassword(It.IsAny<Models.Admin>(), It.IsAny<string>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task UpdatePassword_AdminNotFound_ThrowsNotFoundException()
-    {
-        // Arrange
-        var ct = CancellationToken.None;
-        var id = Guid.NewGuid();
-
-        _adminRepository
-            .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct))
-            .ReturnsAsync((Models.Admin?)null);
-
-        var dto = new UpdatePassword
-        (
-            OldPassword: "old",
-            NewPassword: "new"
-        );
-
-        // Act
-        Func<Task> act = async () => _ = await _sut.UpdatePassword(id, dto, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-
     }
 
     [Fact]

@@ -7,6 +7,7 @@ using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Services;
 using RestifyServer.TypeContracts;
 using System.Linq.Expressions;
+using RestifyServer.Interfaces.Services;
 
 namespace RestifyServer.Tests.Services;
 
@@ -14,6 +15,7 @@ public class TableServiceTests
 {
     private readonly Mock<IRepository<Models.Table>> _tableRepoMock;
     private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IEntityService<Models.Table>> _entityService = new();
     private readonly TableService _sut;
 
     public TableServiceTests()
@@ -21,7 +23,7 @@ public class TableServiceTests
         _tableRepoMock = new Mock<IRepository<Models.Table>>();
         _mapperMock = new Mock<IMapper>();
 
-        _sut = new TableService(_tableRepoMock.Object, _mapperMock.Object);
+        _sut = new TableService(_tableRepoMock.Object, _entityService.Object, _mapperMock.Object);
     }
 
     [Fact]
@@ -50,7 +52,7 @@ public class TableServiceTests
         var dbTable = new Models.Table { Id = id, Number = 1 };
         var dtoTable = new Table { Id = id, Number = 1 };
 
-        _tableRepoMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), true))
+        _entityService.Setup(r => r.LoadEntity(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(dbTable);
         _mapperMock.Setup(m => m.Map<Table>(dbTable)).Returns(dtoTable);
 
@@ -60,22 +62,6 @@ public class TableServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().Be(id);
-    }
-
-    [Fact]
-    public async Task FindById_WhenNotExists_ShouldThrowNotFoundException()
-    {
-        // Arrange
-        var ct = new CancellationTokenSource().Token;
-        var id = Guid.NewGuid();
-        _tableRepoMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
-            .ReturnsAsync((Models.Table?)null);
-
-        // Act
-        var act = () => _sut.FindById(id, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
     }
 
     [Fact]
@@ -101,7 +87,7 @@ public class TableServiceTests
         var existing = new Models.Table { Id = id, Number = 10 };
         var updateDto = new UpdateTable(null); // Record allows null via primary constructor
 
-        _tableRepoMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existing);
 
         // Act
@@ -112,27 +98,13 @@ public class TableServiceTests
     }
 
     [Fact]
-    public async Task Update_WhenTableNotFound_ShouldThrowNotFoundException()
-    {
-        // Arrange
-        _tableRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-            .ReturnsAsync((Models.Table?)null);
-
-        // Act
-        var act = () => _sut.Update(Guid.NewGuid(), new UpdateTable(99));
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-    }
-
-    [Fact]
     public async Task Delete_WhenExists_ShouldRemoveAndSave()
     {
         // Arrange
         var ct = new CancellationTokenSource().Token;
         var id = Guid.NewGuid();
         var existing = new Models.Table { Id = id };
-        _tableRepoMock.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existing);
 
         // Act
@@ -142,19 +114,4 @@ public class TableServiceTests
         result.Should().BeTrue();
         _tableRepoMock.Verify(r => r.Remove(existing), Times.Once);
     }
-
-    [Fact]
-    public async Task Delete_WhenNotExists_ShouldThrowNotFoundException()
-    {
-        // Arrange
-        _tableRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-            .ReturnsAsync((Models.Table?)null);
-
-        // Act
-        var act = () => _sut.Delete(Guid.NewGuid());
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-    }
-
 }

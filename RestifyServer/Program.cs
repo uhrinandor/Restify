@@ -43,6 +43,7 @@ builder.Services.AddRepositories();
 builder.Services.AddMapper();
 builder.Services.AddUtils();
 builder.Services.AddServices();
+builder.Services.AddEntityServices();
 builder.Services.AddControllers(options => ControllerConfigFactory.ConfigureControllers(options));
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddSwagger();

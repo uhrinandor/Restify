@@ -6,6 +6,7 @@ using Moq;
 using RestifyServer.Dto;
 using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
+using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
 using RestifyServer.Services;
 
@@ -15,13 +16,14 @@ public class WaiterServiceTests
 {
     private readonly Mock<IRepository<Models.Waiter>> _waiterRepository = new();
     private readonly Mock<IPasswordHasher<Models.Waiter>> _passwordHasher = new();
+    private readonly Mock<IEntityService<Models.Waiter>> _entityService = new();
     private readonly Mock<IMapper> _mapper = new();
 
     private readonly WaiterService _sut;
 
     public WaiterServiceTests()
     {
-        _sut = new WaiterService(_waiterRepository.Object, _passwordHasher.Object, _mapper.Object);
+        _sut = new WaiterService(_waiterRepository.Object, _entityService.Object, _passwordHasher.Object, _mapper.Object);
     }
 
     [Fact]
@@ -69,8 +71,8 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Id = id, Username = "waiter1" };
         var mapped = new Waiter { Username = "waiter1" };
 
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, true))
-                  .ReturnsAsync(dbWaiter);
+        _entityService.Setup(r => r.LoadEntity(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dbWaiter);
 
         _mapper.Setup(m => m.Map<Waiter>(dbWaiter)).Returns(mapped);
 
@@ -79,22 +81,7 @@ public class WaiterServiceTests
 
         // Assert
         result.Should().BeSameAs(mapped);
-        _waiterRepository.Verify(r => r.GetByIdAsync(It.IsAny<Guid>(), ct, true), Times.Once);
-    }
-
-    [Fact]
-    public async Task FindById_NotFound_ThrowsNotFoundException()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-                  .ReturnsAsync((Models.Waiter?)null);
-
-        // Act
-        Func<Task> act = async () => await _sut.FindById(id);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
+        _entityService.Verify(r => r.LoadEntity(It.IsAny<Guid>(), ct), Times.Once);
     }
 
     [Fact]
@@ -107,8 +94,8 @@ public class WaiterServiceTests
         var update = new UpdateWaiter(Username: "new", Name: "New Name");
         var mapped = new Waiter { Username = "new", Name = "New Name" };
 
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-                  .ReturnsAsync(dbWaiter);
+        _entityService.Setup(r => r.LoadEntityAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dbWaiter);
         _mapper.Setup(m => m.Map<Waiter>(dbWaiter)).Returns(mapped);
 
         // Act
@@ -127,8 +114,8 @@ public class WaiterServiceTests
         var ct = new CancellationTokenSource().Token;
         var id = Guid.NewGuid();
         var dbWaiter = new Models.Waiter { Id = id };
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-                  .ReturnsAsync(dbWaiter);
+        _entityService.Setup(r => r.LoadEntityAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dbWaiter);
 
         // Act
         var result = await _sut.Delete(id, ct);
@@ -147,8 +134,8 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Id = id, Password = "OLD_HASH" };
         var dto = new UpdatePassword("old_plain", "new_plain");
 
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-                  .ReturnsAsync(dbWaiter);
+        _entityService.Setup(r => r.LoadEntityAsync(id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dbWaiter);
 
         _passwordHasher.Setup(h => h.VerifyHashedPassword(dbWaiter, "OLD_HASH", "old_plain"))
                        .Returns(PasswordVerificationResult.Success);
@@ -170,8 +157,8 @@ public class WaiterServiceTests
         var dbWaiter = new Models.Waiter { Password = "OLD_HASH" };
         var dto = new UpdatePassword("wrong", "new");
 
-        _waiterRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-                  .ReturnsAsync(dbWaiter);
+        _entityService.Setup(r => r.LoadEntityAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dbWaiter);
         _passwordHasher.Setup(h => h.VerifyHashedPassword(dbWaiter, "OLD_HASH", "wrong"))
                        .Returns(PasswordVerificationResult.Failed);
 

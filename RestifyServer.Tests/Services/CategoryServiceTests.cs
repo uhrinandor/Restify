@@ -5,6 +5,7 @@ using Moq;
 using RestifyServer.Dto;
 using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
+using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
 using RestifyServer.Services;
 
@@ -15,10 +16,11 @@ public class CategoryServiceTests
     private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly CategoryService _sut;
+    private readonly Mock<IEntityService<Models.Category>> _entityService = new();
 
     public CategoryServiceTests()
     {
-        _sut = new CategoryService(_categoryRepository.Object, _mapper.Object);
+        _sut = new CategoryService(_categoryRepository.Object, _entityService.Object, _mapper.Object);
     }
 
     [Fact]
@@ -30,7 +32,7 @@ public class CategoryServiceTests
         var dbCategory = new Models.Category { Id = id, Name = "Computers" };
         var expectedDto = new Category { Id = id, Name = "Computers" };
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(id, ct, true))
+        _entityService.Setup(r => r.LoadEntity(id, ct))
             .ReturnsAsync(dbCategory);
 
         _mapper.Setup(m => m.Map<Category>(dbCategory))
@@ -43,28 +45,7 @@ public class CategoryServiceTests
         result.Should().NotBeNull();
         result.Id.Should().Be(id);
         result.Name.Should().Be("Computers");
-        _categoryRepository.Verify(r => r.GetByIdAsync(id, ct, true), Times.Once);
-    }
-
-    [Fact]
-    public async Task FindById_TargetDoesNotExist_ThrowsNotFoundException()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var ct = CancellationToken.None;
-
-        _categoryRepository.Setup(r => r.GetByIdAsync(id, ct, false))
-            .ReturnsAsync((Models.Category?)null);
-
-        // Act
-        var act = () => _sut.FindById(id, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>()
-            .Where(e => e.Message.Contains(id.ToString()));
-
-        // Ensure mapping was never attempted since load failed
-        _mapper.Verify(m => m.Map<Category>(It.IsAny<Models.Category>()), Times.Never);
+        _entityService.Verify(r => r.LoadEntity(id, ct), Times.Once);
     }
 
     [Fact]
@@ -94,7 +75,7 @@ public class CategoryServiceTests
         var parentEntity = new Models.Category { Id = parentId, Name = "Root" };
         var input = new CreateCategory("Child", new NestedCategory { Id = parentEntity.Id });
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(It.IsAny<Guid>(), ct))
             .ReturnsAsync(parentEntity);
 
         // Act
@@ -114,7 +95,7 @@ public class CategoryServiceTests
         var dbCategory = new Models.Category { Id = id, Name = "Old", Parent = existingParent };
         var update = new UpdateCategory("New", null);
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(It.IsAny<Guid>(), ct))
             .ReturnsAsync(dbCategory);
 
         // Act
@@ -137,10 +118,10 @@ public class CategoryServiceTests
 
         var update = new UpdateCategory(null, new Category { Id = newParentId });
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(id, It.IsAny<CancellationToken>(), It.IsAny<bool>()))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbCategory);
 
-        _categoryRepository.Setup(r => r.GetByIdAsync(newParentId, It.IsAny<CancellationToken>(), It.IsAny<bool>()))
+        _entityService.Setup(r => r.LoadEntityAsync(newParentId, ct))
             .ReturnsAsync(newParent);
 
         // Act
@@ -179,29 +160,13 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task Delete_TargetDoesNotExist_ThrowsNotFound()
-    {
-        // Arrange
-        var ct = new CancellationTokenSource().Token;
-        var id = Guid.NewGuid();
-        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
-            .ReturnsAsync((Models.Category?)null);
-
-        // Act
-        var act = () => _sut.Delete(id, ct);
-
-        // Assert
-        await act.Should().ThrowAsync<NotFoundException>();
-    }
-
-    [Fact]
     public async Task Delete_TargetExists_RemovesAndSaves()
     {
         // Arrange
         var id = Guid.NewGuid();
         var ct = new CancellationTokenSource().Token;
         var entity = new Models.Category { Id = id };
-        _categoryRepository.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>(), false))
+        _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(entity);
 
         // Act
