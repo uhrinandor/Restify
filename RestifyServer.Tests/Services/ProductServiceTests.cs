@@ -3,7 +3,6 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
@@ -11,17 +10,17 @@ using RestifyServer.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class ProductServiceBaseTests
+public class ProductServiceTests
 {
     private readonly Mock<IRepository<Models.Product>> _productRepository = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly Mock<IEntityService<Models.Product>> _entityService = new();
     private readonly Mock<IEntityService<Models.Category>> _categoryEntityService = new();
-    private readonly ProductServiceBase _sut;
+    private readonly ProductService _sut;
 
-    public ProductServiceBaseTests()
+    public ProductServiceTests()
     {
-        _sut = new ProductServiceBase(
+        _sut = new ProductService(
             _productRepository.Object,
             _entityService.Object,
             _categoryEntityService.Object,
@@ -110,7 +109,7 @@ public class ProductServiceBaseTests
     {
         // Arrange
         var ct = new CancellationTokenSource().Token;
-        var query = new FindProduct(Name: "Filtered", null, null, null);
+        var query = new FindProduct(null, Name: "Filtered", null, null, null);
         var dbList = new List<Models.Product> { new() { Name = "Filtered" } };
         var mappedList = new List<Product> { new Product { Id = Guid.NewGuid(), Name = "Filtered", Description = "", Price = 0, Category = new NestedCategory { Id = Guid.NewGuid(), Name = "C" } } };
 

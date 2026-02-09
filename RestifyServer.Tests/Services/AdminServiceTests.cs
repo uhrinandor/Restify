@@ -12,18 +12,18 @@ using RestifyServer.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class AdminServiceBaseTests
+public class AdminServiceTests
 {
     private readonly Mock<IRepository<Models.Admin>> _adminRepository = new();
     private readonly Mock<IPasswordHasher<Models.Admin>> _passwordHasher = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly Mock<IEntityService<Models.Admin>> _entityService = new();
 
-    private readonly AdminServiceBase _sut;
+    private readonly AdminService _sut;
 
-    public AdminServiceBaseTests()
+    public AdminServiceTests()
     {
-        _sut = new AdminServiceBase(_adminRepository.Object, _entityService.Object, _passwordHasher.Object, _mapper.Object);
+        _sut = new AdminService(_adminRepository.Object, _entityService.Object, _passwordHasher.Object, _mapper.Object);
     }
 
     [Fact]

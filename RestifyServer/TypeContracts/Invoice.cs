@@ -16,3 +16,16 @@ public class Invoice : Entity
 
     public PaymentType Payment { get; set; } = PaymentType.Card;
 }
+
+public class NestedInvoice : Entity
+{
+    public DateTime? ClosedAt { get; set; } = null;
+
+    public decimal Tip { get; set; } = 0;
+
+    public Table Table { get; set; } = null!;
+
+    public Waiter Waiter { get; set; } = null!;
+
+    public PaymentType Payment { get; set; } = PaymentType.Card;
+}

@@ -10,7 +10,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class AdminServiceBase(IRepository<Models.Admin> adminRepo, IEntityService<Models.Admin> entityService, IPasswordHasher<Models.Admin> passwordHasher, IMapper mapper) :
+public class AdminService(IRepository<Models.Admin> adminRepo, IEntityService<Models.Admin> entityService, IPasswordHasher<Models.Admin> passwordHasher, IMapper mapper) :
     CrudServiceBase<Models.Admin, Admin, CreateAdmin, UpdateAdmin, FindAdmin>(adminRepo, entityService, mapper), IAdminService
 {
     protected override Task<Models.Admin> CreateEntity(CreateAdmin data, CancellationToken ct = default)

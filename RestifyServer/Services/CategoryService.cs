@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class CategoryServiceBase(IRepository<Models.Category> categoryRepo, IEntityService<Models.Category> entityService, IMapper mapper) :
+public class CategoryService(IRepository<Models.Category> categoryRepo, IEntityService<Models.Category> entityService, IMapper mapper) :
     CrudServiceBase<Models.Category, Category, CreateCategory, UpdateCategory, FindCategory>(categoryRepo, entityService, mapper), ICategoryService
 {
     protected override async Task<Models.Category> CreateEntity(CreateCategory data, CancellationToken ct = default)

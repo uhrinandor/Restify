@@ -10,19 +10,19 @@ using RestifyServer.Interfaces.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class TableServiceBaseTests
+public class TableServiceTests
 {
     private readonly Mock<IRepository<Models.Table>> _tableRepoMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IEntityService<Models.Table>> _entityService = new();
-    private readonly TableServiceBase _sut;
+    private readonly TableService _sut;
 
-    public TableServiceBaseTests()
+    public TableServiceTests()
     {
         _tableRepoMock = new Mock<IRepository<Models.Table>>();
         _mapperMock = new Mock<IMapper>();
 
-        _sut = new TableServiceBase(_tableRepoMock.Object, _entityService.Object, _mapperMock.Object);
+        _sut = new TableService(_tableRepoMock.Object, _entityService.Object, _mapperMock.Object);
     }
 
     [Fact]

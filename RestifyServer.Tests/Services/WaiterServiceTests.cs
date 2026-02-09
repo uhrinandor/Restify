@@ -4,7 +4,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;

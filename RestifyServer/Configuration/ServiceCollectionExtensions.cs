@@ -43,12 +43,13 @@ public static class ServiceCollectionExtensions
 
         public IServiceCollection AddServices()
         {
-            services.AddScoped<IAdminService, AdminServiceBase>();
+            services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IWaiterService, WaiterService>();
-            services.AddScoped<ICategoryService, CategoryServiceBase>();
-            services.AddScoped<IProductService, ProductServiceBase>();
-            services.AddScoped<ITableService, TableServiceBase>();
-            services.AddScoped<IInvoiceService, InvoiceServiceBase>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ITableService, TableService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<IOrderService, OrderService>();
             return services;
         }
 

@@ -3,7 +3,6 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using RestifyServer.Dto;
-using RestifyServer.Exceptions;
 using RestifyServer.Interfaces.Repositories;
 using RestifyServer.Interfaces.Services;
 using RestifyServer.TypeContracts;
@@ -11,16 +10,16 @@ using RestifyServer.Services;
 
 namespace RestifyServer.Tests.Services;
 
-public class CategoryServiceBaseTests
+public class CategoryServiceTests
 {
     private readonly Mock<IRepository<Models.Category>> _categoryRepository = new();
     private readonly Mock<IMapper> _mapper = new();
-    private readonly CategoryServiceBase _sut;
+    private readonly CategoryService _sut;
     private readonly Mock<IEntityService<Models.Category>> _entityService = new();
 
-    public CategoryServiceBaseTests()
+    public CategoryServiceTests()
     {
-        _sut = new CategoryServiceBase(_categoryRepository.Object, _entityService.Object, _mapper.Object);
+        _sut = new CategoryService(_categoryRepository.Object, _entityService.Object, _mapper.Object);
     }
 
     [Fact]

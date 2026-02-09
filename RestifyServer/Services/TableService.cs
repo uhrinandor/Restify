@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class TableServiceBase(IRepository<Models.Table> tableRepo, IEntityService<Models.Table> entityService, IMapper mapper) :
+public class TableService(IRepository<Models.Table> tableRepo, IEntityService<Models.Table> entityService, IMapper mapper) :
     CrudServiceBase<Models.Table, Table, CreateTable, UpdateTable, FindTable>(tableRepo, entityService, mapper), ITableService
 {
     protected override Task<Models.Table> CreateEntity(CreateTable data, CancellationToken ct = default)

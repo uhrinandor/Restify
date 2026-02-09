@@ -11,18 +11,18 @@ using RestifyServer.TypeContracts;
 
 namespace RestifyServer.Tests.Services;
 
-public class InvoiceServiceBaseTests
+public class InvoiceServiceTests
 {
     private readonly Mock<IRepository<Models.Invoice>> _invoiceRepository = new();
     private readonly Mock<IMapper> _mapper = new();
     private readonly Mock<IEntityService<Models.Invoice>> _entityService = new();
     private readonly Mock<IEntityService<Models.Waiter>> _waiterEntityService = new();
     private readonly Mock<IEntityService<Models.Table>> _tableEntityService = new();
-    private readonly InvoiceServiceBase _sut;
+    private readonly InvoiceService _sut;
 
-    public InvoiceServiceBaseTests()
+    public InvoiceServiceTests()
     {
-        _sut = new InvoiceServiceBase(
+        _sut = new InvoiceService(
             _invoiceRepository.Object,
             _entityService.Object,
             _waiterEntityService.Object,

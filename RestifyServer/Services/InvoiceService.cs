@@ -8,7 +8,7 @@ using RestifyServer.Utils;
 
 namespace RestifyServer.Services;
 
-public class InvoiceServiceBase(IRepository<Models.Invoice> invoiceRepo, IEntityService<Models.Invoice> entityService, IEntityService<Models.Waiter> waiterEntityService, IEntityService<Models.Table> tableEntityService, IMapper mapper) :
+public class InvoiceService(IRepository<Models.Invoice> invoiceRepo, IEntityService<Models.Invoice> entityService, IEntityService<Models.Waiter> waiterEntityService, IEntityService<Models.Table> tableEntityService, IMapper mapper) :
     CrudServiceBase<Models.Invoice, Invoice, CreateInvoice, UpdateInvoice, FindInvoice>(invoiceRepo, entityService, mapper), IInvoiceService
 {
     protected override async Task<Models.Invoice> CreateEntity(CreateInvoice data, CancellationToken ct = default)

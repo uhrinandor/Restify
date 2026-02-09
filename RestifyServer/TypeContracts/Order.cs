@@ -8,5 +8,5 @@ public class Order : Entity
 
     public Product Product { get; set; } = null!;
 
-    public Invoice Invoice { get; set; } = null!;
+    public NestedInvoice Invoice { get; set; } = null!;
 }
