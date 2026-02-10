@@ -6,5 +6,5 @@ public record UpdateProduct(
     string? Name,
     string? Description,
     decimal? Price,
-    Category? Category
+    FindEntity? Category
     );

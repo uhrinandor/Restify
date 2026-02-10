@@ -44,7 +44,7 @@ public class OrderService(IRepository<Models.Order> orderRepo, IEntityService<Mo
 
         if (query.Id != null) p = p.And(x => x.Id == query.Id);
         if (query.Status != null) p = p.And(x => x.Status == query.Status);
-        if (query.Product?.Id != null) p = p.And(x => x.Product.Id == query.Product.Id);
+        if (query.Product != null) p = p.And(x => x.Product.Id == query.Product.Id);
         return p;
     }
 }

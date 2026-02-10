@@ -115,7 +115,7 @@ public class CategoryServiceTests
         var dbCategory = new Models.Category { Id = id, Name = "Category" };
         var newParent = new Models.Category { Id = newParentId, Name = "New Parent" };
 
-        var update = new UpdateCategory(null, new Category { Id = newParentId });
+        var update = new UpdateCategory(null, new FindEntity(Id: newParentId));
 
         _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbCategory);
@@ -142,7 +142,7 @@ public class CategoryServiceTests
         var query = new FindCategory(
             Id: null,
             Name: nameFilter,
-            Parent: parentId.HasValue ? new FindParentCategory(parentId.Value, null) : null
+            Parent: parentId.HasValue ? new FindEntity(Id: parentId.Value) : null
         );
 
         _categoryRepository.Setup(r => r.ListAsync(It.IsAny<Expression<Func<Models.Category, bool>>>(), It.IsAny<CancellationToken>(), true))

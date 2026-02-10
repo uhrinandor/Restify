@@ -233,7 +233,7 @@ public class OrderServiceTests
         var query = new FindOrder(
             Id: orderId,
             Status: OrderStatus.New,
-            Product: new FindProduct(productId, null, null, null, null),
+            Product: new FindEntity(Id: productId),
             Invoice: null
         );
 

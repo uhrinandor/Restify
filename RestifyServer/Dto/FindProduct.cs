@@ -5,5 +5,5 @@ public record FindProduct(
     string? Name,
     string? Description,
     decimal? Price,
-    FindCategory? Category
+    FindEntity? Category
     );

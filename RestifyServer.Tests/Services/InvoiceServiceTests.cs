@@ -95,8 +95,8 @@ public class InvoiceServiceTests
         var newTable = new Models.Table { Id = newTableId };
 
         var update = new UpdateInvoice(
-            Waiter: new Waiter { Id = newWaiterId },
-            Table: new Table { Id = newTableId }
+            Waiter: new FindEntity(Id: newWaiterId),
+            Table: new FindEntity(Id: newTableId)
         );
 
         _entityService.Setup(s => s.LoadEntityAsync(id, ct))
@@ -137,7 +137,7 @@ public class InvoiceServiceTests
         var newWaiter = new Models.Waiter { Id = newWaiterId };
 
         var update = new UpdateInvoice(
-            Waiter: new Waiter { Id = newWaiterId },
+            Waiter: new FindEntity(Id: newWaiterId),
             Table: null
         );
 
@@ -167,8 +167,8 @@ public class InvoiceServiceTests
 
         var query = new FindInvoice(
             Id: invoiceId,
-            Waiter: new FindWaiter(Id: waiterId, null, null),
-            Table: new FindTable(Id: tableId, null),
+            Waiter: new FindEntity(Id: waiterId),
+            Table: new FindEntity(Id: tableId),
             Payment: PaymentType.Cash,
             IsClosed: true
         );

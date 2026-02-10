@@ -35,8 +35,8 @@ public class InvoiceService(IRepository<Models.Invoice> invoiceRepo, IEntityServ
     {
         var p = Predicate.True<Models.Invoice>();
         if (query.Id != null) p = p.And(x => x.Id == query.Id);
-        if (query.Waiter?.Id != null) p = p.And(x => x.Waiter.Id == query.Waiter.Id);
-        if (query.Table?.Id != null) p = p.And(x => x.Table.Id == query.Table.Id);
+        if (query.Waiter != null) p = p.And(x => x.Waiter.Id == query.Waiter.Id);
+        if (query.Table != null) p = p.And(x => x.Table.Id == query.Table.Id);
         if (query.Payment != null) p = p.And(x => x.Payment == query.Payment);
         if (query.IsClosed != null) p = p.And(x => (x.ClosedAt != null) == query.IsClosed);
 

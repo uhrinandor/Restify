@@ -67,7 +67,7 @@ public class ProductServiceTests
         var newCat = new Models.Category { Id = newCatId, Name = "New Cat" };
 
         // Primary constructor for UpdateProduct record
-        var update = new UpdateProduct("New Name", "New Desc", 99.99m, new Category { Id = newCatId });
+        var update = new UpdateProduct("New Name", "New Desc", 99.99m, new FindEntity(Id: newCatId));
 
         _entityService.Setup(r => r.LoadEntityAsync(id, ct))
             .ReturnsAsync(dbProduct);
